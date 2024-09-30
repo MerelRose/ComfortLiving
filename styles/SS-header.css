@@ -36,9 +36,14 @@ body {
 
 .button-group {
     display: flex;
-    justify-content: flex; /* Ensures buttons stay to the right */
-    gap: 20px; /* Adds spacing between buttons */
-    flex-grow: 1;
+    justify-content: flex-end;
+    gap: 20px;
     padding-right: 20px;
-    margin-left: 200px;
+    margin-right: 0px;
 }
+
+input[type=text] {
+    width: 15%;
+    color: rgb(81, 138, 103);
+    padding: 10px;
+  }

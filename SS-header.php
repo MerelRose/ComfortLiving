@@ -4,9 +4,10 @@
         <div class="header-bg">
             <img src="img/logo.png" alt="logo" width="10%" height="auto" class="logo">
             <div class="button-group">
-                <button class="nav-btn">Overview</button>
-                <button class="nav-btn">About</button>
-                <button class="nav-btn">Login</button>
+                <input type="text" class="nav-btn" placeholder="Search..">
+                <button class="nav-btn">Search</button>
+                <button class="nav-btn">Login</button>  
+                <button class="nav-btn">My Account</button>
             </div>
         </div>
     </header>
