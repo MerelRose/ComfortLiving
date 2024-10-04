@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/high-tide');
+
 body {
   padding: 0;
   margin: 0;
@@ -10,6 +12,11 @@ body {
   height: 130px;
   margin: 0px;
   box-shadow: 41px 52px 73px lightgray;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
 }
 
 .nav-btn {
@@ -45,4 +52,13 @@ body {
 input[type=text] {
   width: 15%;
   color: rgb(81, 138, 103);
+}
+
+.slogan {
+  font-size: 30px;
+  font-weight: bold;
+  color: rgb(60,81,76);
+  position: absolute;
+  margin-top: 110px;
+  font-family: 'High Tide', sans-serif;
 }

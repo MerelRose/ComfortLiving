@@ -11,6 +11,7 @@ function App() {
       <header>
         <div className="header-bg">
           <img src={logo} className="logo" alt="logo" width="10%" height="auto"/>
+          <span className="slogan">Waar uw droomhuis werkelijkheid wordt</span>
           <div className="button-group">
             <input type="text" className="nav-btn" placeholder="Search.."/>
             <button className="nav-btn">Search</button>
