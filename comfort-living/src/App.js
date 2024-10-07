@@ -4,6 +4,7 @@ import logo from './logo.png';
 import './App.css';
 import Login from './Login';
 import MyAccount from './MyAccount';
+import WarningPopup from './WarningPopup';
 
 function App() {
   return (
@@ -20,11 +21,18 @@ function App() {
           </div>
         </div>
       </header>
-      <Routes>
+
+      <div className="App">
+      <WarningPopup />
+      {/* Other components go here */}
+      </div>
+
+      <Routes className="content">
         <Route path="/login" element={<Login />} />
         <Route path="/my-account" element={<MyAccount />} />
       </Routes>
     </BrowserRouter>
+    
   );
 }
 
