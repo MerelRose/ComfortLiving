@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import logo from './logo.png';
 import './App.css';
@@ -8,6 +8,12 @@ import MyAccount from './MyAccount';
 import WarningPopup from './WarningPopup';
 
 function App() {
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false); // State to manage popup visibility
+
+  const toggleRegisterPopup = () => {
+    setIsRegisterOpen(!isRegisterOpen);
+  };
+
   return (
     <BrowserRouter>
       <header>
@@ -18,24 +24,23 @@ function App() {
             <input type="text" className="nav-btn" placeholder="Search.."/>
             <button className="nav-btn">Search</button>
             <button className="nav-btn" onClick={() => window.location.href = '/login'}>Login</button>
-            <button className="nav-btn" onClick={() => window.location.href = '/register'}>Register</button>
+            <button className="nav-btn" onClick={toggleRegisterPopup}>Register</button>
             <button className="nav-btn" onClick={() => window.location.href = '/my-account'}>My Account</button>
           </div>
         </div>
       </header>
 
       <div className="App">
-      <WarningPopup />
-      {/* Other components go here */}
+        <WarningPopup />
+        {/* Pass the state and toggle function to Register component */}
+        <Register isOpen={isRegisterOpen} togglePopup={toggleRegisterPopup} />
       </div>
 
       <Routes className="content">
         <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
         <Route path="/my-account" element={<MyAccount />} />
       </Routes>
     </BrowserRouter>
-    
   );
 }
 
