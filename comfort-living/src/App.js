@@ -3,6 +3,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import logo from './logo.png';
 import './App.css';
 import Login from './Login';
+import Register from './Register';
 import MyAccount from './MyAccount';
 import WarningPopup from './WarningPopup';
 
@@ -17,6 +18,7 @@ function App() {
             <input type="text" className="nav-btn" placeholder="Search.."/>
             <button className="nav-btn">Search</button>
             <button className="nav-btn" onClick={() => window.location.href = '/login'}>Login</button>
+            <button className="nav-btn" onClick={() => window.location.href = '/register'}>Register</button>
             <button className="nav-btn" onClick={() => window.location.href = '/my-account'}>My Account</button>
           </div>
         </div>
@@ -29,6 +31,8 @@ function App() {
 
       <Routes className="content">
         <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
         <Route path="/my-account" element={<MyAccount />} />
       </Routes>
     </BrowserRouter>
