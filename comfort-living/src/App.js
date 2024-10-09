@@ -32,7 +32,6 @@ function App() {
       <Routes className="content">
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
-
         <Route path="/my-account" element={<MyAccount />} />
       </Routes>
     </BrowserRouter>
