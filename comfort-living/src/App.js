@@ -1,26 +1,24 @@
 import React, { useState } from 'react';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 import logo from './logo.png';
 import './App.css';
-import LoginForm from './Login'; // Change this to import the LoginForm
+import LoginForm from './Login'; 
 import Register from './Register';
 import MyAccount from './MyAccount';
 import WarningPopup from './WarningPopup';
 
 function App() {
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false); // State to manage register popup visibility
-  const [isLoginOpen, setIsLoginOpen] = useState(false); // State to manage login popup visibility
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const location = useLocation();
 
-  const toggleRegisterPopup = () => {
-    setIsRegisterOpen(!isRegisterOpen);
-  };
-
-  const toggleLoginPopup = () => {
-    setIsLoginOpen(!isLoginOpen);
-  };
+  React.useEffect(() => {
+    setIsRegisterOpen(false);
+    setIsLoginOpen(false);
+  }, [location.pathname]);
 
   return (
-    <BrowserRouter>
+    <>
       <header>
         <div className="header-bg">
           <img src={logo} className="logo" alt="logo" width="10%" height="auto" />
@@ -28,8 +26,8 @@ function App() {
           <div className="button-group">
             <input type="text" className="nav-btn" placeholder="Search.." />
             <button className="nav-btn">Search</button>
-            <button className="nav-btn" onClick={toggleLoginPopup}>Login</button> {/* Toggle login popup */}
-            <button className="nav-btn" onClick={toggleRegisterPopup}>Register</button>
+            <button className="nav-btn" onClick={() => setIsLoginOpen(true)}>Login</button>
+            <button className="nav-btn" onClick={() => setIsRegisterOpen(true)}>Register</button>
             <button className="nav-btn" onClick={() => window.location.href = '/my-account'}>My Account</button>
           </div>
         </div>
@@ -37,15 +35,23 @@ function App() {
 
       <div className="App">
         <WarningPopup />
-        <Register isOpen={isRegisterOpen} togglePopup={toggleRegisterPopup} />
-        <LoginForm isOpen={isLoginOpen} togglePopup={toggleLoginPopup} /> {/* Add LoginForm here */}
+        <Register isOpen={isRegisterOpen} togglePopup={() => setIsRegisterOpen(false)} />
+        <LoginForm isOpen={isLoginOpen} togglePopup={() => setIsLoginOpen(false)} />
       </div>
 
-      <Routes className="content">
+      <Routes>
         <Route path="/my-account" element={<MyAccount />} />
+        <Route path="/login" element={<div />} />
+        <Route path="/register" element={<div />} />
       </Routes>
-    </BrowserRouter>
+    </>
   );
 }
 
-export default App;
+const AppWrapper = () => (
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);
+
+export default AppWrapper;
