@@ -122,7 +122,6 @@ function RegisterForm({ isOpen, togglePopup }) {
                 <option value="">Selecteer geslacht</option>
                 <option value="man">Man</option>
                 <option value="vrouw">Vrouw</option>
-                <option value="anders">Anders</option>
               </select>
               <br />
               <label>Geboortedatum:</label>
