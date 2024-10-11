@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css'; // Ensure you have this CSS file to apply styles
+import './App.css'; // Zorg ervoor dat je deze CSS hebt voor stijlen
 
 function RegisterForm({ isOpen, togglePopup }) {
   const [formData, setFormData] = useState({
@@ -10,6 +10,8 @@ function RegisterForm({ isOpen, togglePopup }) {
     huidigewoonplaats: '',
     geslacht: '',
     geboortedatum: '',
+    wachtwoord: '', // Wachtwoordveld toegevoegd
+    bevestigWachtwoord: '', // Bevestiging van wachtwoord toegevoegd
   });
 
   const [dag, setDag] = useState('');
@@ -20,7 +22,7 @@ function RegisterForm({ isOpen, togglePopup }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Make the birthday based on the selected day, month, and year
+    // Maak de geboortedatum gebaseerd op de geselecteerde dag, maand en jaar
     if (!dag || !maand || !jaar) {
       setMessage("Selecteer een geldige geboortedatum.");
       console.error("Geboortedatum niet correct geselecteerd.");
@@ -37,21 +39,28 @@ function RegisterForm({ isOpen, togglePopup }) {
       age--;
     }
 
-    // Check if the user is 18 years or older
+    // Controleer of de gebruiker 18 jaar of ouder is
     if (age < 18) {
       setMessage("Je moet 18 jaar of ouder zijn om te registreren.");
       console.error("Leeftijd is minder dan 18.");
       return;
     }
 
-    // Check if all fields are filled
-    if (!formData.voornaam || !formData.achternaam || !formData.email || !formData.telefoonnummer || !formData.huidigewoonplaats || !formData.geslacht) {
+    // Controleer of alle velden zijn ingevuld
+    if (!formData.voornaam || !formData.achternaam || !formData.email || !formData.telefoonnummer || !formData.huidigewoonplaats || !formData.geslacht || !formData.wachtwoord || !formData.bevestigWachtwoord) {
       setMessage("Alle velden zijn verplicht.");
       console.error("Niet alle velden zijn ingevuld.");
       return;
     }
 
-    // Validate email address
+    // Controleer of de wachtwoorden overeenkomen
+    if (formData.wachtwoord !== formData.bevestigWachtwoord) {
+      setMessage("De wachtwoorden komen niet overeen.");
+      console.error("Wachtwoorden komen niet overeen.");
+      return;
+    }
+
+    // Valideer e-mailadres
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       setMessage("Ongeldig e-mailadres. Vul een correct e-mailadres in.");
@@ -59,10 +68,10 @@ function RegisterForm({ isOpen, togglePopup }) {
       return;
     }
 
-    // Validate phone number
+    // Valideer telefoonnummer
     const phoneNumber = formData.telefoonnummer.trim();
-    const mobileRegex = /^06\d{8}$/; // Mobile numbers start with 06 and have 10 digits
-    const internationalRegex = /^\+31\s?6\d{8}$/; // International number +31 6 and 10 digits
+    const mobileRegex = /^06\d{8}$/; // Mobiele nummers beginnen met 06 en hebben 10 cijfers
+    const internationalRegex = /^\+31\s?6\d{8}$/; // Internationaal nummer +31 6 en 10 cijfers
 
     if (!mobileRegex.test(phoneNumber) && !internationalRegex.test(phoneNumber)) {
       setMessage("Ongeldig telefoonnummer. Vul een geldig Nederlands telefoonnummer in (bijv. 06xxxxxxxx of +31 6xxxxxxxx).");
@@ -70,7 +79,7 @@ function RegisterForm({ isOpen, togglePopup }) {
       return;
     }
 
-    // If all validations pass
+    // Als alle validaties slagen
     setMessage("Registratie succesvol!");
     console.log("Succesvolle registratie:", { ...formData, geboortedatum });
   };
@@ -96,7 +105,13 @@ function RegisterForm({ isOpen, togglePopup }) {
               <label>Email:</label>
               <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
               <br />
-              <label>Telefoonnummer:</label>
+              <label>Wachtwoord:</label> 
+              <input type="password" name="wachtwoord" value={formData.wachtwoord} onChange={handleInputChange} />
+              <br />
+              <label>Bevestig Wachtwoord:</label> 
+              <input type="password" name="bevestigWachtwoord" value={formData.bevestigWachtwoord} onChange={handleInputChange} />
+              <br />
+              <label>Telefoonnummer:</label> 
               <input type="tel" name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} />
               <br />
               <label>Huidige woonplaats:</label>
@@ -132,7 +147,6 @@ function RegisterForm({ isOpen, togglePopup }) {
                 </select>
               </div>
               <br />
-              {message && <p style={{ color: message.includes("succesvol") ? "green" : "red" }}>{message}</p>}
               <button type="submit">Registreren</button>
               <button type="button" onClick={togglePopup}>Sluiten</button>
             </form>

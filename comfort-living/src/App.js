@@ -14,7 +14,7 @@ function App() {
 
   React.useEffect(() => {
     setIsRegisterOpen(false);
-    setIsLoginOpen(false);
+    setIsLoginOpen(false); 
   }, [location.pathname]);
 
   return (
