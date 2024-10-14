@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css'; // Ensure you have this CSS file to apply styles
+import './login.css';
 
 function LoginForm({ isOpen, togglePopup }) {
   const [username, setUsername] = useState('');
@@ -8,10 +8,9 @@ function LoginForm({ isOpen, togglePopup }) {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log(`Username: ${username}, Password: ${password}`);
-    // You can add further login logic here, like authentication
   };
 
-  if (!isOpen) return null; // Don't render if not open
+  if (!isOpen) return null;
 
   return (
     <div className='popup'>
