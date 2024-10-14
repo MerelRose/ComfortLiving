@@ -7,30 +7,50 @@ function RegisterForm({ isOpen, togglePopup }) {
     achternaam: '',
     email: '',
     telefoonnummer: '',
-    huidigewoonplaats: '',
+    huidig_woonadres: '', // Naam gewijzigd van huidigewoonplaats naar huidig_woonadres
     geslacht: '',
     geboortedatum: '',
-    wachtwoord: '', // Wachtwoordveld toegevoegd
-    bevestigWachtwoord: '', // Bevestiging van wachtwoord toegevoegd
+    wachtwoord: '', // Wachtwoordveld
   });
 
-  const [dag, setDag] = useState('');
-  const [maand, setMaand] = useState('');
-  const [jaar, setJaar] = useState('');
+  const [bevestigWachtwoord, setBevestigWachtwoord] = useState(''); // Apart veld voor wachtwoordbevestiging
   const [message, setMessage] = useState('');
+
+  // Voeg een functie toe om de data naar de backend te sturen
+  const registerUser = async (userData) => {
+    try {
+      const response = await fetch('http://localhost:3001/klanten', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Er is een probleem opgetreden bij het registreren');
+      }
+
+      const data = await response.json();
+      setMessage('Registratie succesvol! Welkom ' + data.voornaam);
+      console.log('Succesvolle registratie:', data);
+    } catch (error) {
+      console.error('Fout bij registratie:', error);
+      setMessage('Er is iets misgegaan tijdens de registratie.');
+    }
+  };
 
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Maak de geboortedatum gebaseerd op de geselecteerde dag, maand en jaar
-    if (!dag || !maand || !jaar) {
+    // Controleer of de geboortedatum is ingevuld
+    if (!formData.geboortedatum) {
       setMessage("Selecteer een geldige geboortedatum.");
-      console.error("Geboortedatum niet correct geselecteerd.");
+      console.error("Geboortedatum niet ingevuld.");
       return;
     }
 
-    const geboortedatum = `${dag.toString().padStart(2, '0')}-${maand.toString().padStart(2, '0')}-${jaar}`;
-    const birthday = new Date(jaar, maand - 1, dag);
+    const birthday = new Date(formData.geboortedatum);
     const today = new Date();
     let age = today.getFullYear() - birthday.getFullYear();
     const monthDifference = today.getMonth() - birthday.getMonth();
@@ -47,41 +67,29 @@ function RegisterForm({ isOpen, togglePopup }) {
     }
 
     // Controleer of alle velden zijn ingevuld
-    if (!formData.voornaam || !formData.achternaam || !formData.email || !formData.telefoonnummer || !formData.huidigewoonplaats || !formData.geslacht || !formData.wachtwoord || !formData.bevestigWachtwoord) {
+    if (!formData.voornaam || !formData.achternaam || !formData.email || !formData.telefoonnummer || !formData.huidig_woonadres || !formData.geslacht || !formData.wachtwoord) {
       setMessage("Alle velden zijn verplicht.");
       console.error("Niet alle velden zijn ingevuld.");
       return;
     }
 
     // Controleer of de wachtwoorden overeenkomen
-    if (formData.wachtwoord !== formData.bevestigWachtwoord) {
+    if (formData.wachtwoord !== bevestigWachtwoord) {
       setMessage("De wachtwoorden komen niet overeen.");
       console.error("Wachtwoorden komen niet overeen.");
       return;
     }
 
-    // Valideer e-mailadres
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setMessage("Ongeldig e-mailadres. Vul een correct e-mailadres in.");
-      console.error("Ongeldig e-mailadres:", formData.email);
-      return;
-    }
-
-    // Valideer telefoonnummer
-    const phoneNumber = formData.telefoonnummer.trim();
-    const mobileRegex = /^06\d{8}$/; // Mobiele nummers beginnen met 06 en hebben 10 cijfers
-    const internationalRegex = /^\+31\s?6\d{8}$/; // Internationaal nummer +31 6 en 10 cijfers
-
-    if (!mobileRegex.test(phoneNumber) && !internationalRegex.test(phoneNumber)) {
-      setMessage("Ongeldig telefoonnummer. Vul een geldig Nederlands telefoonnummer in (bijv. 06xxxxxxxx of +31 6xxxxxxxx).");
-      console.error("Ongeldig telefoonnummer:", formData.telefoonnummer);
-      return;
-    }
-
-    // Als alle validaties slagen
-    setMessage("Registratie succesvol!");
-    console.log("Succesvolle registratie:", { ...formData, geboortedatum });
+    // Verstuur het formulier naar de backend via de registerUser functie
+    registerUser({
+      voornaam: formData.voornaam,
+      achternaam: formData.achternaam,
+      geslacht: formData.geslacht,
+      geboortedatum: formData.geboortedatum,
+      huidig_woonadres: formData.huidig_woonadres,
+      telefoonnummer: formData.telefoonnummer,
+      wachtwoord: formData.wachtwoord,
+    });
   };
 
   const handleInputChange = (event) => {
@@ -109,13 +117,13 @@ function RegisterForm({ isOpen, togglePopup }) {
               <input type="password" name="wachtwoord" value={formData.wachtwoord} onChange={handleInputChange} />
               <br />
               <label>Bevestig Wachtwoord:</label> 
-              <input type="password" name="bevestigWachtwoord" value={formData.bevestigWachtwoord} onChange={handleInputChange} />
+              <input type="password" name="bevestigWachtwoord" value={bevestigWachtwoord} onChange={(e) => setBevestigWachtwoord(e.target.value)} />
               <br />
               <label>Telefoonnummer:</label> 
-              <input type="tel" name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} />
+              <input type="tel" inputMode='numeric'  name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} />
               <br />
-              <label>Huidige woonplaats:</label>
-              <input type="text" name="huidigewoonplaats" value={formData.huidigewoonplaats} onChange={handleInputChange} />
+              <label>Huidig woonadres:</label>
+              <input type="text" name="huidig_woonadres" value={formData.huidig_woonadres} onChange={handleInputChange} />
               <br />
               <label>Geslacht:</label>
               <select name="geslacht" value={formData.geslacht} onChange={handleInputChange}>
@@ -125,30 +133,12 @@ function RegisterForm({ isOpen, togglePopup }) {
               </select>
               <br />
               <label>Geboortedatum:</label>
-              <div>
-                <select name="dag" value={dag} onChange={(e) => setDag(e.target.value)}>
-                  <option value="">Dag</option>
-                  {Array.from({ length: 31 }, (_, i) => (
-                    <option key={i} value={i + 1}>{i + 1}</option>
-                  ))}
-                </select>
-                <select name="maand" value={maand} onChange={(e) => setMaand(e.target.value)}>
-                  <option value="">Maand</option>
-                  {["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"].map((month, i) => (
-                    <option key={i} value={i + 1}>{month}</option>
-                  ))}
-                </select>
-                <select name="jaar" value={jaar} onChange={(e) => setJaar(e.target.value)}>
-                  <option value="">Jaar</option>
-                  {Array.from({ length: 100 }, (_, i) => (
-                    <option key={i} value={new Date().getFullYear() - i}>{new Date().getFullYear() - i}</option>
-                  ))}
-                </select>
-              </div>
+              <input type="date" name="geboortedatum" value={formData.geboortedatum} onChange={handleInputChange} />
               <br />
               <button type="submit">Registreren</button>
               <button type="button" onClick={togglePopup}>Sluiten</button>
             </form>
+            {message && <p>{message}</p>}
           </div>
         </div>
       )}
