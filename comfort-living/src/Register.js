@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import './App.css'; // Zorg ervoor dat je deze CSS hebt voor stijlen
+import './login.css'; // Zorg ervoor dat je deze CSS hebt voor stijlen
 
 function RegisterForm({ isOpen, togglePopup }) {
   const [formData, setFormData] = useState({
@@ -104,12 +104,14 @@ function RegisterForm({ isOpen, togglePopup }) {
           <div className='popup-inner'>
             <h2>Registratieformulier</h2>
             <form onSubmit={handleSubmit}>
-              <label>Voornaam:</label>
-              <input type="text" name="voornaam" value={formData.voornaam} onChange={handleInputChange} />
-              <br />
-              <label>Achternaam:</label>
-              <input type="text" name="achternaam" value={formData.achternaam} onChange={handleInputChange} />
-              <br />
+              <div className='name-container'>
+                <label>Voornaam:</label>
+                <input type="text" name="voornaam" value={formData.voornaam} onChange={handleInputChange} />
+                <br />
+                <label>Achternaam:</label>
+                <input type="text" name="achternaam" value={formData.achternaam} onChange={handleInputChange} />
+                <br />
+              </div>
               <label>Email:</label>
               <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
               <br />
@@ -125,16 +127,18 @@ function RegisterForm({ isOpen, togglePopup }) {
               <label>Huidig woonadres:</label>
               <input type="text" name="huidig_woonadres" value={formData.huidig_woonadres} onChange={handleInputChange} />
               <br />
-              <label>Geslacht:</label>
-              <select name="geslacht" value={formData.geslacht} onChange={handleInputChange}>
-                <option value="">Selecteer geslacht</option>
-                <option value="man">Man</option>
-                <option value="vrouw">Vrouw</option>
-              </select>
-              <br />
-              <label>Geboortedatum:</label>
-              <input type="date" name="geboortedatum" value={formData.geboortedatum} onChange={handleInputChange} />
-              <br />
+              <div className='name-container'>
+                <label>Geslacht:</label>
+                <select name="geslacht" value={formData.geslacht} onChange={handleInputChange}>
+                  <option value="">Selecteer geslacht</option>
+                  <option value="man">Man</option>
+                  <option value="vrouw">Vrouw</option>
+                </select>
+                <br />
+                <label>Geboortedatum:</label>
+                <input type="date" name="geboortedatum" value={formData.geboortedatum} onChange={handleInputChange} />
+                <br />
+              </div>
               <button type="submit">Registreren</button>
               <button type="button" onClick={togglePopup}>Sluiten</button>
             </form>

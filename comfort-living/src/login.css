@@ -37,13 +37,31 @@ form input[type="text"],
 form input[type="email"],
 form input[type="password"],
 form input[type="tel"],
-form select {
-    width: calc(100% - 10px); /* Gelijke breedte voor alle velden */
+form input[type="date"] {
+    width: calc(100% - 10px);
     font-size: 14px;
     border: none;
     border-radius: 35px;
     background: linear-gradient(180deg, rgb(96, 133, 124) 9%, rgb(192, 196, 179) 53%, rgba(228,225,224,1) 94%);
     height: 30px;
+    color: rgb(81, 138, 103);
+    cursor: pointer;
+    font-size: larger;
+    font-weight: 300;
+    font-family: 'Rubik';
+    margin-top: -80px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    padding: 6px;
+    margin: 5px;
+}
+
+form select {
+    width: calc(100% - 10px);
+    font-size: 14px;
+    border: none;
+    border-radius: 35px;
+    background: linear-gradient(180deg, rgb(96, 133, 124) 9%, rgb(192, 196, 179) 53%, rgba(228,225,224,1) 94%);
+    height: 42px;
     color: rgb(81, 138, 103);
     cursor: pointer;
     font-size: larger;
@@ -81,4 +99,13 @@ form button {
 form button:hover {
     transform: scale(1.05) rotate(-1deg);
     box-shadow: rgba(130, 182, 150, 0.2) 0 -25px 18px -14px inset, rgba(49, 63, 54, 0.15) 0 1px 2px, rgba(175, 243, 201, 0.15) 0 2px 4px, rgba(54, 77, 63, 0.15) 0 4px 8px, rgba(92, 255, 155, 0.15) 0 8px 16px, rgba(44, 187, 99, 0.15) 0 16px 32px;
+}
+
+.name-container {
+    display: flex;
+  }
+  
+.name-container input {
+    width: 100%;
+    height: auto;
 }
