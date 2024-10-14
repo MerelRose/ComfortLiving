@@ -38,15 +38,16 @@ function App() {
         <WarningPopup />
         <Register isOpen={isRegisterOpen} togglePopup={() => setIsRegisterOpen(false)} />
         <LoginForm isOpen={isLoginOpen} togglePopup={() => setIsLoginOpen(false)} />
-      </div>
-
-      <Routes className="content">
+        <Routes className="content">
         <Route path="/search" element={<Search />} />
         <Route path="/login" element={<LoginForm />} />
         <Route path="/my-account" element={<MyAccount />} />
         <Route path="/login" element={<div />} />
         <Route path="/register" element={<div />} />
       </Routes>
+      </div>
+
+     
     </>
   );
 }

@@ -90,7 +90,7 @@ function RegisterForm({ isOpen, togglePopup }) {
   };
 
   return (
-    <div className='content'>
+    <div className='contentl'>
       {isOpen && (
         <div className='popup'>
           <div className='popup-inner'>
