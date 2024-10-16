@@ -7,18 +7,20 @@ function RegisterForm({ isOpen, togglePopup }) {
     achternaam: '',
     email: '',
     telefoonnummer: '',
-    huidig_woonadres: '', // Naam gewijzigd van huidigewoonplaats naar huidig_woonadres
+    huidig_woonadres: '',
     geslacht: '',
     geboortedatum: '',
-    wachtwoord: '', // Wachtwoordveld
+    wachtwoord: '',
   });
 
-  const [bevestigWachtwoord, setBevestigWachtwoord] = useState(''); // Apart veld voor wachtwoordbevestiging
+  const [bevestigWachtwoord, setBevestigWachtwoord] = useState('');
   const [message, setMessage] = useState('');
 
-  // Voeg een functie toe om de data naar de backend te sturen
+  // Function to send registration data to the backend
   const registerUser = async (userData) => {
     try {
+      console.log('User data being sent:', userData); // Log user data before sending
+
       const response = await fetch('http://localhost:3001/klanten', {
         method: 'POST',
         headers: {
@@ -27,11 +29,15 @@ function RegisterForm({ isOpen, togglePopup }) {
         body: JSON.stringify(userData),
       });
 
+      console.log('Response status:', response.status); // Log response status
+      const responseBody = await response.text(); // Get response body as text
+      console.log('Response body:', responseBody); // Log response body
+
       if (!response.ok) {
-        throw new Error('Er is een probleem opgetreden bij het registreren');
+        throw new Error('Er is een probleem opgetreden bij het registreren: ' + responseBody);
       }
 
-      const data = await response.json();
+      const data = JSON.parse(responseBody); // Parse response body
       setMessage('Registratie succesvol! Welkom ' + data.voornaam);
       console.log('Succesvolle registratie:', data);
     } catch (error) {
@@ -43,7 +49,7 @@ function RegisterForm({ isOpen, togglePopup }) {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Controleer of de geboortedatum is ingevuld
+    // Validate birth date
     if (!formData.geboortedatum) {
       setMessage("Selecteer een geldige geboortedatum.");
       console.error("Geboortedatum niet ingevuld.");
@@ -59,30 +65,31 @@ function RegisterForm({ isOpen, togglePopup }) {
       age--;
     }
 
-    // Controleer of de gebruiker 18 jaar of ouder is
+    // Validate age
     if (age < 18) {
       setMessage("Je moet 18 jaar of ouder zijn om te registreren.");
       console.error("Leeftijd is minder dan 18.");
       return;
     }
 
-    // Controleer of alle velden zijn ingevuld
+    // Validate required fields
     if (!formData.voornaam || !formData.achternaam || !formData.email || !formData.telefoonnummer || !formData.huidig_woonadres || !formData.geslacht || !formData.wachtwoord) {
       setMessage("Alle velden zijn verplicht.");
       console.error("Niet alle velden zijn ingevuld.");
       return;
     }
 
-    // Controleer of de wachtwoorden overeenkomen
+    // Validate password confirmation
     if (formData.wachtwoord !== bevestigWachtwoord) {
       setMessage("De wachtwoorden komen niet overeen.");
       console.error("Wachtwoorden komen niet overeen.");
       return;
     }
 
-    // Verstuur het formulier naar de backend via de registerUser functie
+    // Send registration data
     registerUser({
       voornaam: formData.voornaam,
+      email: formData.email,
       achternaam: formData.achternaam,
       geslacht: formData.geslacht,
       geboortedatum: formData.geboortedatum,
@@ -122,7 +129,7 @@ function RegisterForm({ isOpen, togglePopup }) {
               <input type="password" name="bevestigWachtwoord" value={bevestigWachtwoord} onChange={(e) => setBevestigWachtwoord(e.target.value)} />
               <br />
               <label>Telefoonnummer:</label> 
-              <input type="tel" inputMode='numeric'  name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} />
+              <input type="tel" inputMode='numeric' name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} />
               <br />
               <label>Huidig woonadres:</label>
               <input type="text" name="huidig_woonadres" value={formData.huidig_woonadres} onChange={handleInputChange} />
