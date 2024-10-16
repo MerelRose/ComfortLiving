@@ -32,7 +32,8 @@
 .nav-btn {
   border: none;
   border-radius: 35px;
-  background: linear-gradient(180deg, rgb(96, 133, 124) 9%, rgb(192, 196, 179) 53%, rgba(228,225,224,1) 94%);
+  /* background: linear-gradient(180deg, rgb(96, 133, 124) 9%, rgb(192, 196, 179) 53%, rgba(228,225,224,1) 94%); */
+  background: linear-gradient(180deg, rgb(160, 193, 184, 0.5) 10%, rgb(196, 202, 185, 0.5) 40%, rgb(228, 225, 218, 0.8) 70%, rgb(245, 242, 237, 0.8) 85%, rgba(255, 254, 253, 0.8) 100%);
   width: 155px;
   height: 40px;
   color: rgb(81, 138, 103);
