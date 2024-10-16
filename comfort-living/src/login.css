@@ -43,9 +43,9 @@ form input[type="date"] {
     border: none;
     border-radius: 35px;
     /* background: linear-gradient(180deg, rgb(96, 133, 124) 9%, rgb(192, 196, 179) 53%, rgba(228,225,224,1) 94%); */
-    background: linear-gradient(180deg, rgb(160, 193, 184) 9%, rgb(222, 224, 209) 53%, rgba(255, 254, 253, 1) 94%);
+    background: linear-gradient(to bottom, #f0f0f0, #d3d3d3);
     height: 30px;
-    color: rgb(81, 138, 103);
+    color: rgb(176, 182, 178);
     cursor: pointer;
     font-size: larger;
     font-weight: 300;
@@ -61,9 +61,9 @@ form select {
     font-size: 14px;
     border: none;
     border-radius: 35px;
-    background: linear-gradient(180deg, rgb(96, 133, 124) 9%, rgb(192, 196, 179) 53%, rgba(228,225,224,1) 94%);
+    background: linear-gradient(to bottom, #f0f0f0, #d3d3d3);
     height: 42px;
-    color: rgb(81, 138, 103);
+    color: rgb(176, 182, 178);
     cursor: pointer;
     font-size: larger;
     font-weight: 300;
@@ -84,7 +84,7 @@ form .message {
 form button {
     border: none;
     border-radius: 35px;
-    background: linear-gradient(180deg, rgb(160, 193, 184) 9%, rgb(222, 224, 209) 53%, rgba(255, 254, 253, 1) 94%);
+    background: linear-gradient(to bottom, #f0f0f0, #d3d3d3);
     width: 155px;
     height: 40px;
     color: rgb(81, 138, 103);
