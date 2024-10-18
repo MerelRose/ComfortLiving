@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './App.css';
 import './search.css';
+import './App.css';
 
 const PandenList = () => {
   const [panden, setPanden] = useState([]);
@@ -40,13 +40,13 @@ const PandenList = () => {
   return (
     
     <div className='content'>
-      <h1>Panden:</h1>
       {/* Zoekveld */}
       <input 
         type="text" 
         placeholder="Zoek op postcode, straat, huisnummer of plaats" 
         value={searchTerm}
         onChange={handleSearch} 
+        className='input'
       />
           {filteredPanden.map((pand) => (
               <div key={pand.id} className='pand-kaart'>

@@ -45,7 +45,7 @@ form input[type="date"] {
     /* background: linear-gradient(180deg, rgb(96, 133, 124) 9%, rgb(192, 196, 179) 53%, rgba(228,225,224,1) 94%); */
     background: linear-gradient(to bottom, #f0f0f0, #d3d3d3);
     height: 30px;
-    color: rgb(176, 182, 178);
+    /* color: rgb(176, 182, 178); */
     cursor: pointer;
     font-size: larger;
     font-weight: 300;
@@ -63,7 +63,7 @@ form select {
     border-radius: 35px;
     background: linear-gradient(to bottom, #f0f0f0, #d3d3d3);
     height: 42px;
-    color: rgb(176, 182, 178);
+    /* color: rgb(176, 182, 178); */
     cursor: pointer;
     font-size: larger;
     font-weight: 300;

@@ -60,11 +60,7 @@
   position: relative;
 }
 
-input[type="text"] {
-  width: 300px;
-  height: 40px;
-  color: rgb(81, 138, 103);
-}
+
 
 .slogan {
   font-size: 30px;
