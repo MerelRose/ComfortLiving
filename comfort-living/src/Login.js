@@ -1,20 +1,18 @@
-import React, { useState } from 'react';
-import './login.css';
+import React, { useState, useContext } from 'react';
+import { AuthContext } from './AuthContext';
 
 function LoginForm({ isOpen, togglePopup }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const { login } = useContext(AuthContext);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    
-    // Clear previous messages
     setErrorMessage('');
     setSuccessMessage('');
-
-    // Maak een POST-verzoek naar de backend
+    
     try {
       const response = await fetch('http://localhost:3001/klanten/login', {
         method: 'POST',
@@ -22,18 +20,35 @@ function LoginForm({ isOpen, togglePopup }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: username, // Zorg ervoor dat het veld overeenkomt met wat je backend verwacht
-          wachtwoord: password, // Verstuur het wachtwoord
+          email: username,
+          wachtwoord: password,
         }),
       });
-
-      const data = await response.text(); // Als je JSON verwacht, gebruik response.json()
-
+  
+      const responseText = await response.text();
+      console.log('Server response:', responseText); // Log de ruwe server respons
+  
+      let userData;
+      try {
+        userData = JSON.parse(responseText);
+      } catch (e) {
+        console.log('Response is niet in JSON formaat:', responseText);
+        userData = null;
+      }
+  
       if (response.ok) {
+        if (userData) {
+          login(userData);
+        } else {
+          // Als er geen userData is, log toch in met minimale gegevens
+          login({ isLoggedIn: true });
+        }
+        sessionStorage.setItem('user', JSON.stringify({ isLoggedIn: true }));
+        console.log('Succesvol ingelogd.');
         setSuccessMessage('Login succesvol!');
-        console.log(data); // Kan een succesbericht tonen
+        togglePopup();
       } else {
-        setErrorMessage(data); // Dit toont de foutmelding van de backend
+        setErrorMessage(userData?.message || responseText || 'Ongeldige inloggegevens');
       }
     } catch (error) {
       console.error('Fout bij het inloggen:', error);
@@ -53,7 +68,7 @@ function LoginForm({ isOpen, togglePopup }) {
             <input
               type="text"
               value={username}
-              onChange={(event) => setUsername(event.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               required
             />
           </label>
@@ -63,7 +78,7 @@ function LoginForm({ isOpen, togglePopup }) {
             <input
               type="password"
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </label>
