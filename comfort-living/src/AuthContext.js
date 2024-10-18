@@ -7,16 +7,16 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = sessionStorage.getItem('user');
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
         const userData = JSON.parse(storedUser);
         setUser(userData);
         setIsLoggedIn(true);
-        console.log('Gebruiker opgehaald uit sessie:', userData);
+        console.log('Gebruiker opgehaald uit lokale opslag:', userData);
       } catch (error) {
-        console.error('Invalid session data');
-        sessionStorage.removeItem('user');
+        console.error('Ongeldige gebruikersgegevens in lokale opslag');
+        localStorage.removeItem('user');
       }
     }
   }, []);
@@ -25,13 +25,14 @@ export const AuthProvider = ({ children }) => {
     console.log('Login functie aangeroepen met:', userData);
     setUser(userData);
     setIsLoggedIn(true);
-    sessionStorage.setItem('user', JSON.stringify(userData));
+    localStorage.setItem('user', JSON.stringify(userData));
     console.log('Gebruiker ingelogd en opgeslagen:', userData);
   };
+
   const logout = () => {
     setUser(null);
     setIsLoggedIn(false);
-    sessionStorage.removeItem('user');
+    localStorage.removeItem('user');
     console.log('Gebruiker uitgelogd');
   };
   
@@ -40,4 +41,4 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
-};
+}; 
