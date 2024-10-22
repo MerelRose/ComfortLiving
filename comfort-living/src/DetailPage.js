@@ -15,7 +15,7 @@ const WoningDetail = () => {
 
                 // Doe een fetch-verzoek naar de backend om woninggegevens op te halen
                 const response = await fetch(`http://localhost:3001/panden/${id}`);
-                
+                console.log(`Fetching from: http://localhost:3001/panden/${id}`);
                 // Log de status van de response
                 console.log("Response status:", response.status);
 

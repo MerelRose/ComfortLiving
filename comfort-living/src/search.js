@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 import './search.css';
 import './App.css';
 
@@ -7,6 +8,7 @@ const PandenList = () => {
   const [panden, setPanden] = useState([]);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get('http://localhost:3001/panden')
@@ -28,19 +30,20 @@ const PandenList = () => {
     return (
       pand.postcode.toLowerCase().includes(lowerSearchTerm) ||
       pand.straat.toLowerCase().includes(lowerSearchTerm) ||
-      // pand.huisnummer.toLowerCase().includes(lowerSearchTerm) ||
       pand.plaats.toLowerCase().includes(lowerSearchTerm)
     );
   });
+
+  const handleDetailsClick = (id) => {
+    navigate(`/woning/${id}`);
+  };
 
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   return (
-    
     <div className='content'>
-      {/* Zoekveld */}
       <input 
         type="text" 
         placeholder="Zoek op postcode, straat, huisnummer of plaats" 
@@ -48,20 +51,25 @@ const PandenList = () => {
         onChange={handleSearch} 
         className='input'
       />
-          {filteredPanden.map((pand) => (
-              <div key={pand.id} className='pand-kaart'>
-                <p>{pand.id}</p>
-                <p>{pand.postcode}</p>
-                <p>{pand.straat}</p>
-                <p>{pand.huisnummer}</p>
-                <p>{pand.plaats}</p>
-                <p>{pand.Omschrijving}</p>
-                <p>{pand.type}</p>
-                <p>{pand.GPS}</p>
-              </div>
-          ))}
+      {filteredPanden.map((pand) => (
+        <div key={pand.id} className='pand-kaart'>
+          <p>{pand.id}</p>
+          <p>{pand.postcode}</p>
+          <p>{pand.straat}</p>
+          <p>{pand.huisnummer}</p>
+          <p>{pand.plaats}</p>
+          <p>{pand.Omschrijving}</p>
+          <p>{pand.type}</p>
+          <p>{pand.GPS}</p>
+          <button 
+            className='nav-btn' 
+            onClick={() => handleDetailsClick(pand.id)}
+          >
+            Bekijk details
+          </button>
+        </div>
+      ))}
     </div>
-    
   );
 };
 
