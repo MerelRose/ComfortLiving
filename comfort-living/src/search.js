@@ -61,12 +61,7 @@ const PandenList = () => {
           <p>{pand.Omschrijving}</p>
           <p>{pand.type}</p>
           <p>{pand.GPS}</p>
-          <button 
-            className='nav-btn' 
-            onClick={() => handleDetailsClick(pand.id)}
-          >
-            Bekijk details
-          </button>
+          <button className='nav-btn' onClick={() => handleDetailsClick(pand.id)}>Bekijk details</button>
         </div>
       ))}
     </div>

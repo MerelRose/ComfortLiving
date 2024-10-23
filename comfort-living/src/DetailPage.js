@@ -1,10 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import './App.css'; 
+import './login.css'; 
 const WoningDetail = () => {
     const { id } = useParams(); // Haal het ID uit de URL
     const [woning, setWoning] = useState(null);
     const [loading, setLoading] = useState(true);
+
+    const [isOpen, setIsOpen] = useState(false);
+
+    const handleOpenPopup = () => {
+        setIsOpen(true);
+    };
+
+    const handleClosePopup = () => {
+        setIsOpen(false);
+    };
 
     // Gebruik useEffect om woningdata op te halen zodra de component is gemount
     useEffect(() => {
@@ -52,18 +62,39 @@ const WoningDetail = () => {
     // Toon de woningdetails zodra de data is opgehaald
     return (
         <div className='content'>
+            <div>
+                <h1>{`${woning.straat} ${woning.huisnummer}`}</h1>
+                <p>Postcode: {woning.postcode}</p>
+                <p>Plaats: {woning.plaats}</p>
+                <p>Type: {woning.type}</p>
+                <p>Omschrijving: {woning.omschrijving}</p>
+                <p>Prijs: {woning.prijs}</p>
+                {/* Andere details kunnen hier worden toegevoegd */}
+            </div>
 
-        <div>
-            <h1>{`${woning.straat} ${woning.huisnummer}`}</h1>
-            <p>Postcode: {woning.postcode}</p>
-            <p>Plaats: {woning.plaats}</p>
-            <p>Type: {woning.type}</p>
-            <p>Omschrijving: {woning.omschrijving}</p>
-            <p>Prijs: {woning.prijs}</p>
-            {/* Andere details kunnen hier worden toegevoegd */}
-        </div>
+
+            <button className='nav-btn' onClick={handleOpenPopup}>Open Pop-up</button>
+
+            {isOpen && (
+                <div className='popup'>
+                    <form>
+                        <div className='popup-inner'>
+                            <h2>Pop-up Content</h2>
+                            <label>Aantal personen:</label> 
+                            <input type="number" name="personen"/>
+                            <br />
+                            <label>Jaar inkomen:</label> 
+                            <input type="number" name="inkomen"/>
+                            <br />
+                            <button>Inschrijven</button>
+                            <button onClick={handleClosePopup}>Close</button>
+                        </div>
+                    </form>
+                </div>
+            )}
         </div>
     );
+
 };
 
 export default WoningDetail;
