@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import './App.css';
+import ChangePasswordPopup from './ChangePasswordPopup'; 
 
 const formatDate = (dateString) => {
   if (!dateString) return 'Niet beschikbaar';
@@ -12,35 +13,26 @@ const formatDate = (dateString) => {
 };
 
 function MyAccount() {
-  const { isLoggedIn, user } = useContext(AuthContext);
-  const [newPassword, setNewPassword] = useState('');
+  const { isLoggedIn, user, logout } = useContext(AuthContext);
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [message, setMessage] = useState('');
 
-  console.log('MyAccount - isLoggedIn:', isLoggedIn);
-  console.log('MyAccount - user:', user);
-
-  const handleChangePassword = async () => {
-    if (!newPassword) {
-      setMessage('Voer een nieuw wachtwoord in.');
-      return;
-    }
-
+  const handleChangePassword = async (newPassword) => {
     try {
-      const response = await fetch('http://localhost:3001/users', {
-        method: 'POST',
+      const response = await fetch(`http://localhost:3001/klanten/${user.id}`, {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email: user.email,
-          newPassword: newPassword
+          wachtwoord: newPassword // Alleen het nieuwe wachtwoord doorgeven
         }),
         credentials: 'include'
       });
 
       if (response.ok) {
         setMessage('Wachtwoord succesvol gewijzigd.');
-        setNewPassword('');
+        setIsPopupOpen(false); // Sluit de popup
       } else {
         const errorData = await response.json();
         setMessage(`Fout bij het wijzigen van wachtwoord: ${errorData.message}`);
@@ -49,28 +41,27 @@ function MyAccount() {
       setMessage(`Er is een fout opgetreden: ${error.message}`);
     }
   };
-// account verwijderen
-const { logout } = useContext(AuthContext);
-const handleDeleteAccount = async () => {
-  if (window.confirm('Weet u zeker dat u uw account wilt verwijderen?')) {
-    try {
-      const response = await fetch(`http://localhost:3001/klanten/${user.id}`, { // Gebruik user.id hier
-        method: 'DELETE',
-        credentials: 'include'
-      });
 
-      if (response.ok) {
-        setMessage(`Klant met id ${user.id} is succesvol verwijderd.`);
-        logout(); // Gebruiker uitloggen na succesvol verwijderen van account
-      } else {
-        const errorData = await response.json();
-        setMessage(`Fout bij het verwijderen van account: ${errorData.message}`);
+  const handleDeleteAccount = async () => {
+    if (window.confirm('Weet u zeker dat u uw account wilt verwijderen?')) {
+      try {
+        const response = await fetch(`http://localhost:3001/klanten/${user.id}`, {
+          method: 'DELETE',
+          credentials: 'include'
+        });
+
+        if (response.ok) {
+          setMessage(`Klant met id ${user.id} is succesvol verwijderd.`);
+          logout(); // Gebruiker uitloggen na succesvol verwijderen van account
+        } else {
+          const errorData = await response.json();
+          setMessage(`Fout bij het verwijderen van account: ${errorData.message}`);
+        }
+      } catch (error) {
+        setMessage(`Er is een fout opgetreden: ${error.message}`);
       }
-    } catch (error) {
-      setMessage(`Er is een fout opgetreden: ${error.message}`);
     }
-  }
-};
+  };
 
   if (!isLoggedIn) {
     return <div className='content'>U bent niet ingelogd. Log in om uw account te bekijken.</div>;
@@ -79,32 +70,31 @@ const handleDeleteAccount = async () => {
   return (
     <div className='content'>
       <h1>Mijn Account</h1>
+
       {user ? (
         <div className="user-info">
-          <p><strong>Voornaam:</strong> {user.voornaam || 'Niet beschikbaar'}</p>
-          <p><strong>Achternaam:</strong> {user.achternaam || 'Niet beschikbaar'}</p>
+          <p><strong>Voor - en achternaam:</strong> {user.voornaam} {user.achternaam}</p>
           <p><strong>Email:</strong> {user.email || 'Niet beschikbaar'}</p>
           <p><strong>Telefoonnummer:</strong> {user.telefoonnummer || 'Niet beschikbaar'}</p>
           <p><strong>Adres:</strong> {user.huidig_woonadres || 'Niet beschikbaar'}</p>
           <p><strong>Geslacht:</strong> {user.geslacht || 'Niet beschikbaar'}</p>
-          <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>       
+          <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>  
           
-          <button className='nav-btn' onClick={handleDeleteAccount}>Verwijder uw Account</button>
-          
-          <div>
-            <input
-              type="password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              placeholder="Nieuw wachtwoord"
-            />
-            <button className='nav-btn' onClick={handleChangePassword}>Verander Wachtwoord</button>
-          </div>
-          {message && <p>{message}</p>}
+          <button className='nav-btn' onClick={() => setIsPopupOpen(true)}>Wachtwoord Wijzigen</button>
+          <button className='nav-btn' onClick={handleDeleteAccount}>Account Verwijderen</button>
         </div>
       ) : (
-        <p>U w accountgegevens zijn niet beschikbaar.</p>
+        <p>Geen gebruikersinformatie beschikbaar.</p>
       )}
+
+      {isPopupOpen && (
+        <ChangePasswordPopup
+          isOpen={isPopupOpen}
+          onClose={() => setIsPopupOpen(false)}
+          onChangePassword={handleChangePassword}
+        />
+      )}
+      {message && <p>{message}</p>}
     </div>
   );
 }
