@@ -50,26 +50,27 @@ function MyAccount() {
     }
   };
 // account verwijderen
-  const handleDeleteAccount = async () => {
-    if (window.confirm('Weet u zeker dat u uw account wilt verwijderen?')) {
-      try {
-        const response = await fetch(`http://localhost:3001/klanten/${user.email}`, {
-          method: 'DELETE',
-          credentials: 'include'
-        });
+const { logout } = useContext(AuthContext);
+const handleDeleteAccount = async () => {
+  if (window.confirm('Weet u zeker dat u uw account wilt verwijderen?')) {
+    try {
+      const response = await fetch(`http://localhost:3001/klanten/${user.id}`, { // Gebruik user.id hier
+        method: 'DELETE',
+        credentials: 'include'
+      });
 
-        if (response.ok) {
-          setMessage(`Klant met email ${user.email} is succesvol verwijderd.`);
-          // Hier kan je eventueel de gebruiker uitloggen of de state resetten
-        } else {
-          const errorData = await response.json();
-          setMessage(`Fout bij het verwijderen van account: ${errorData.message}`);
-        }
-      } catch (error) {
-        setMessage(`Er is een fout opgetreden: ${error.message}`);
+      if (response.ok) {
+        setMessage(`Klant met id ${user.id} is succesvol verwijderd.`);
+        logout(); // Gebruiker uitloggen na succesvol verwijderen van account
+      } else {
+        const errorData = await response.json();
+        setMessage(`Fout bij het verwijderen van account: ${errorData.message}`);
       }
+    } catch (error) {
+      setMessage(`Er is een fout opgetreden: ${error.message}`);
     }
-  };
+  }
+};
 
   if (!isLoggedIn) {
     return <div className='content'>U bent niet ingelogd. Log in om uw account te bekijken.</div>;
