@@ -37,6 +37,7 @@ form input[type="text"],
 form input[type="email"],
 form input[type="password"],
 form input[type="tel"],
+form input[type="number"],
 form input[type="date"] {
     width: calc(100% - 10px);
     font-size: 14px;
