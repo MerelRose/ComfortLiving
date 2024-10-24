@@ -1,65 +1,107 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import './login.css'; 
+import { AuthContext } from './AuthContext';
+import './App.css';
+
 const WoningDetail = () => {
-    const { id } = useParams(); // Haal het ID uit de URL
+    const { id } = useParams();
     const [woning, setWoning] = useState(null);
     const [loading, setLoading] = useState(true);
-
+    const { isLoggedIn, user } = useContext(AuthContext); 
     const [isOpen, setIsOpen] = useState(false);
 
-    const handleOpenPopup = () => {
-        setIsOpen(true);
-    };
+    // State voor het inschrijfformulier
+    const [showInschrijfForm, setShowInschrijfForm] = useState(false);
+    const [hoeveel_personen, setHoeveelPersonen] = useState('');
+    const [jaar_inkomen, setJaarInkomen] = useState('');
+    const [inschrijfMessage, setInschrijfMessage] = useState('');
 
-    const handleClosePopup = () => {
-        setIsOpen(false);
-    };
-
-    // Gebruik useEffect om woningdata op te halen zodra de component is gemount
     useEffect(() => {
         const fetchWoning = async () => {
             try {
-                // Log het ID om te controleren of het correct uit de URL wordt gehaald
-                console.log("ID uit URL:", id);
-
-                // Doe een fetch-verzoek naar de backend om woninggegevens op te halen
                 const response = await fetch(`http://localhost:3001/panden/${id}`);
-                console.log(`Fetching from: http://localhost:3001/panden/${id}`);
-                // Log de status van de response
-                console.log("Response status:", response.status);
-
-                // Als de response niet ok is (bijvoorbeeld een 404), gooi een fout
                 if (!response.ok) throw new Error('Woning niet gevonden');
-
-                // Zet de response-data om in JSON en sla het op in de state
                 const data = await response.json();
-                console.log("Data van woning:", data); // Log de opgehaalde data
-                
-                setWoning(data); // Sla de woningdata op in de state
+                console.log('Woningdata succesvol opgehaald:', data);
+                setWoning(data);
             } catch (error) {
-                // Log eventuele fouten
-                console.error("Fout bij het ophalen van woningdata:", error);
+                console.error('Fout bij het ophalen van woningdata:', error);
+                console.log('Woning niet gevonden of andere fout:', error.message);
             } finally {
-                // Zet loading op false, ongeacht of er een fout was
                 setLoading(false);
             }
-        };
+        };        
 
-        fetchWoning(); // Roep de functie aan
-    }, [id]); // Voer opnieuw uit wanneer het ID verandert
+        fetchWoning();
+    }, [id]);
 
-    // Laat een loading message zien als de data nog wordt opgehaald
+    const handleInschrijven = async (e) => {
+        e.preventDefault();
+        console.log('Inschrijfformulier ingediend');
+        console.log('Aantal personen:', hoeveel_personen);
+        console.log('Jaar inkomen:', jaar_inkomen);
+    
+        // Controleer of de gebruiker is ingelogd voordat je de fetch uitvoert
+        if (!isLoggedIn) {
+            setInschrijfMessage('U moet eerst inloggen om u in te kunnen schrijven.');
+            console.log('Inschrijving mislukt: gebruiker niet ingelogd');
+            return;
+        }
+    
+        try {
+            const response = await fetch('http://localhost:3001/inschrijvingen', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    userid: user.id,
+                    pandid: parseInt(id), 
+                    hoeveel_personen: parseInt(hoeveel_personen),
+                    jaar_inkomen: parseFloat(jaar_inkomen),
+                }),
+            });
+    
+            const data = await response.json();
+    
+            // Controleer of de inschrijving succesvol was
+            if (response.ok) {
+                console.log('Inschrijving succesvol:', data);
+                setInschrijfMessage('Inschrijving succesvol!');
+                setShowInschrijfForm(false);
+                setHoeveelPersonen('');
+                setJaarInkomen('');
+            } else {
+                console.log('Fout bij inschrijven:', data.error || 'Onbekende fout');
+                setInschrijfMessage(data.error || 'Er is iets misgegaan bij het inschrijven.');
+            }
+        } catch (error) {
+            console.error('Fout bij inschrijven:', error);
+            setInschrijfMessage('Er is een fout opgetreden bij het inschrijven.');
+        }
+    };
+    
+    const handleOpenPopup = () => {
+        console.log('Pop-up geopend');
+        setIsOpen(true);
+    };
+    
+
+    const handleClosePopup = (e) => {
+        e.preventDefault();
+        console.log('Pop-up gesloten');
+        setIsOpen(false);
+    };
+    
+
     if (loading) {
         return <div>Loading...</div>;
     }
 
-    // Als er geen woningdata is gevonden, geef een foutmelding
     if (!woning) {
         return <div>Woning niet gevonden</div>;
     }
 
-    // Toon de woningdetails zodra de data is opgehaald
     return (
         <div className='content'>
             <div>
@@ -69,32 +111,40 @@ const WoningDetail = () => {
                 <p>Type: {woning.type}</p>
                 <p>Omschrijving: {woning.omschrijving}</p>
                 <p>Prijs: {woning.prijs}</p>
-                {/* Andere details kunnen hier worden toegevoegd */}
-            </div>
 
+                <button className='nav-btn' onClick={handleOpenPopup}>Open Pop-up</button>
 
-            <button className='nav-btn' onClick={handleOpenPopup}>Open Pop-up</button>
-
-            {isOpen && (
-                <div className='popup'>
-                    <form>
+                {isOpen && (
+                    <div className='popup'>
                         <div className='popup-inner'>
-                            <h2>Pop-up Content</h2>
-                            <label>Aantal personen:</label> 
-                            <input type="number" name="personen"/>
-                            <br />
-                            <label>Jaar inkomen:</label> 
-                            <input type="number" name="inkomen"/>
-                            <br />
-                            <button>Inschrijven</button>
-                            <button onClick={handleClosePopup}>Close</button>
+                            <h2>Inschrijfformulier</h2>
+                            <form onSubmit={handleInschrijven}>
+                                <label>Aantal personen:</label>
+                                <input
+                                    type="number"
+                                    value={hoeveel_personen}
+                                    onChange={(e) => setHoeveelPersonen(e.target.value)}
+                                />
+                                <br />
+                                <label>Jaar inkomen:</label>
+                                <input
+                                    type="number"
+                                    value={jaar_inkomen}
+                                    onChange={(e) => setJaarInkomen(e.target.value)}
+                                />
+                                <br />
+                                <button type="submit">Inschrijven</button>
+                                <button onClick={handleClosePopup}>Sluiten</button>
+                            </form>
+                            {inschrijfMessage && (
+                                <p className="inschrijf-message">{inschrijfMessage}</p>
+                            )}
                         </div>
-                    </form>
-                </div>
-            )}
+                    </div>
+                )}
+            </div>
         </div>
     );
-
 };
 
 export default WoningDetail;

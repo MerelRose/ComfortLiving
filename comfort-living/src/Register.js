@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import './login.css'; // Zorg ervoor dat je deze CSS hebt voor stijlen
+import React, { useState, useContext } from 'react';
+import { AuthContext } from './AuthContext'; // Voeg deze regel toe om toegang te krijgen tot de login-functionaliteit
+import './login.css';
 
 function RegisterForm({ isOpen, togglePopup }) {
   const [formData, setFormData] = useState({
@@ -15,12 +16,12 @@ function RegisterForm({ isOpen, togglePopup }) {
 
   const [bevestigWachtwoord, setBevestigWachtwoord] = useState('');
   const [message, setMessage] = useState('');
+  const { login } = useContext(AuthContext); // Haal de login-functie op uit de AuthContext
 
-  // Function to send registration data to the backend
   const registerUser = async (userData) => {
     try {
-      console.log('User data being sent:', userData); // Log user data before sending
-
+      console.log('User data being sent:', userData);
+  
       const response = await fetch('http://localhost:3001/klanten', {
         method: 'POST',
         headers: {
@@ -28,31 +29,50 @@ function RegisterForm({ isOpen, togglePopup }) {
         },
         body: JSON.stringify(userData),
       });
-
-      console.log('Response status:', response.status); // Log response status
-      const responseBody = await response.text(); // Get response body as text
-      console.log('Response body:', responseBody); // Log response body
-
+  
+      const responseBody = await response.text();
+      console.log('Response body:', responseBody);
+  
       if (!response.ok) {
         throw new Error('Er is een probleem opgetreden bij het registreren: ' + responseBody);
       }
-
-      const data = JSON.parse(responseBody); // Parse response body
+  
+      const data = JSON.parse(responseBody);
       setMessage('Registratie succesvol! Welkom ' + data.voornaam);
       console.log('Succesvolle registratie:', data);
+  
+      // Automatisch inloggen na succesvolle registratie
+      const userInfo = {
+        voornaam: data.voornaam || 'Niet beschikbaar',
+        achternaam: data.achternaam || 'Niet beschikbaar',
+        email: data.email,
+        telefoonnummer: data.telefoonnummer || 'Niet beschikbaar',
+        huidig_woonadres: data.huidig_woonadres || 'Niet beschikbaar',
+        geslacht: data.geslacht || 'Niet beschikbaar',
+        geboortedatum: data.geboortedatum || 'Niet beschikbaar',
+        isLoggedIn: true,
+      };
+  
+      // Sla de gebruikersinformatie op in sessionStorage
+      sessionStorage.setItem('user', JSON.stringify(userInfo));
+  
+      // Roep login functie aan met volledige gebruikersinformatie
+      login(userInfo);
+  
+      togglePopup(); // Sluit het popup-formulier
+  
     } catch (error) {
       console.error('Fout bij registratie:', error);
       setMessage('Er is iets misgegaan tijdens de registratie.');
     }
   };
-
+  
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Validate birth date
+    // Valideer de velden zoals in de oorspronkelijke code
     if (!formData.geboortedatum) {
       setMessage("Selecteer een geldige geboortedatum.");
-      console.error("Geboortedatum niet ingevuld.");
       return;
     }
 
@@ -65,28 +85,22 @@ function RegisterForm({ isOpen, togglePopup }) {
       age--;
     }
 
-    // Validate age
     if (age < 18) {
       setMessage("Je moet 18 jaar of ouder zijn om te registreren.");
-      console.error("Leeftijd is minder dan 18.");
       return;
     }
 
-    // Validate required fields
     if (!formData.voornaam || !formData.achternaam || !formData.email || !formData.telefoonnummer || !formData.huidig_woonadres || !formData.geslacht || !formData.wachtwoord) {
       setMessage("Alle velden zijn verplicht.");
-      console.error("Niet alle velden zijn ingevuld.");
       return;
     }
 
-    // Validate password confirmation
     if (formData.wachtwoord !== bevestigWachtwoord) {
       setMessage("De wachtwoorden komen niet overeen.");
-      console.error("Wachtwoorden komen niet overeen.");
       return;
     }
 
-    // Send registration data
+    // Verstuur de registratiegegevens
     registerUser({
       voornaam: formData.voornaam,
       email: formData.email,
@@ -122,13 +136,13 @@ function RegisterForm({ isOpen, togglePopup }) {
               <label>Email:</label>
               <input type="email" name="email" value={formData.email} onChange={handleInputChange} />
               <br />
-              <label>Wachtwoord:</label> 
+              <label>Wachtwoord:</label>
               <input type="password" name="wachtwoord" value={formData.wachtwoord} onChange={handleInputChange} />
               <br />
-              <label>Bevestig Wachtwoord:</label> 
+              <label>Bevestig Wachtwoord:</label>
               <input type="password" name="bevestigWachtwoord" value={bevestigWachtwoord} onChange={(e) => setBevestigWachtwoord(e.target.value)} />
               <br />
-              <label>Telefoonnummer:</label> 
+              <label>Telefoonnummer:</label>
               <input type="tel" inputMode='numeric' name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} />
               <br />
               <label>Huidig woonadres:</label>

@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import './App.css';
 
@@ -10,11 +10,67 @@ const formatDate = (dateString) => {
   const year = date.getFullYear();
   return `${day}-${month}-${year}`;
 };
+
 function MyAccount() {
   const { isLoggedIn, user } = useContext(AuthContext);
+  const [newPassword, setNewPassword] = useState('');
+  const [message, setMessage] = useState('');
 
   console.log('MyAccount - isLoggedIn:', isLoggedIn);
   console.log('MyAccount - user:', user);
+
+  const handleChangePassword = async () => {
+    if (!newPassword) {
+      setMessage('Voer een nieuw wachtwoord in.');
+      return;
+    }
+
+    try {
+      const response = await fetch('http://localhost:3001/users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          newPassword: newPassword
+        }),
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setMessage('Wachtwoord succesvol gewijzigd.');
+        setNewPassword('');
+      } else {
+        const errorData = await response.json();
+        setMessage(`Fout bij het wijzigen van wachtwoord: ${errorData.message}`);
+      }
+    } catch (error) {
+      setMessage(`Er is een fout opgetreden: ${error.message}`);
+    }
+  };
+// account verwijderen
+const { logout } = useContext(AuthContext);
+const handleDeleteAccount = async () => {
+  if (window.confirm('Weet u zeker dat u uw account wilt verwijderen?')) {
+    try {
+      const response = await fetch(`http://localhost:3001/klanten/${user.id}`, { // Gebruik user.id hier
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (response.ok) {
+        setMessage(`Klant met id ${user.id} is succesvol verwijderd.`);
+        logout(); // Gebruiker uitloggen na succesvol verwijderen van account
+      } else {
+        const errorData = await response.json();
+        setMessage(`Fout bij het verwijderen van account: ${errorData.message}`);
+      }
+    } catch (error) {
+      setMessage(`Er is een fout opgetreden: ${error.message}`);
+    }
+  }
+};
 
   if (!isLoggedIn) {
     return <div className='content'>U bent niet ingelogd. Log in om uw account te bekijken.</div>;
@@ -31,9 +87,23 @@ function MyAccount() {
           <p><strong>Telefoonnummer:</strong> {user.telefoonnummer || 'Niet beschikbaar'}</p>
           <p><strong>Adres:</strong> {user.huidig_woonadres || 'Niet beschikbaar'}</p>
           <p><strong>Geslacht:</strong> {user.geslacht || 'Niet beschikbaar'}</p>
-          <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>        </div>
+          <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>       
+          
+          <button className='nav-btn' onClick={handleDeleteAccount}>Verwijder uw Account</button>
+          
+          <div>
+            <input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Nieuw wachtwoord"
+            />
+            <button className='nav-btn' onClick={handleChangePassword}>Verander Wachtwoord</button>
+          </div>
+          {message && <p>{message}</p>}
+        </div>
       ) : (
-        <p>U bent ingelogd, maar er zijn geen gedetailleerde gebruikersgegevens beschikbaar.</p>
+        <p>U w accountgegevens zijn niet beschikbaar.</p>
       )}
     </div>
   );
