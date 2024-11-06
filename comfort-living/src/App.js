@@ -9,6 +9,7 @@ import Register from './Register';
 import Search from './search';
 import MyAccount from './MyAccount';
 import WarningPopup from './WarningPopup';
+import Home from './Home';
 
 function Header({ setIsLoginOpen, setIsRegisterOpen }) {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
@@ -22,7 +23,7 @@ function Header({ setIsLoginOpen, setIsRegisterOpen }) {
   return (
     <header>
       <div className="header-bg">
-        <img src={logo} className="logo" alt="logo" />
+        <img src={logo} className="logo" alt="logo" onClick={() => navigate('/')}/>
         <span className="slogan">Waar uw droomhuis werkelijkheid wordt!</span>
         <div className="button-group">
           {isLoggedIn ? (
@@ -79,6 +80,7 @@ function App() {
         <Register isOpen={isRegisterOpen} togglePopup={() => setIsRegisterOpen(false)} />
         <Routes className="content">
           <Route path="/search" element={<Search />} />
+          <Route path="/" element={<Home />} />
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/woning/:id" element={<WoningDetail />} />
           <Route path="/detailpage" element={<WoningDetail />} />
