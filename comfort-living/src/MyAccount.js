@@ -17,30 +17,31 @@ function MyAccount() {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [message, setMessage] = useState('');
 
-  const handleChangePassword = async (newPassword) => {
+  const handleChangePassword = async (oldPassword, newPassword) => {
     try {
-      const response = await fetch(`http://localhost:3001/klanten/${user.id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          wachtwoord: newPassword // Alleen het nieuwe wachtwoord doorgeven
-        }),
-        credentials: 'include'
-      });
+        const response = await fetch(`http://localhost:3001/klanten/${user.id}/wachtwoord`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                oudWachtwoord: oldPassword, // Send the old password
+                nieuwWachtwoord: newPassword // Send the new password
+            }),
+            credentials: 'include'
+        });
 
-      if (response.ok) {
-        setMessage('Wachtwoord succesvol gewijzigd.');
-        setIsPopupOpen(false); // Sluit de popup
-      } else {
-        const errorData = await response.json();
-        setMessage(`Fout bij het wijzigen van wachtwoord: ${errorData.message}`);
-      }
+        if (response.ok) {
+            setMessage('Wachtwoord succesvol gewijzigd.');
+            setIsPopupOpen(false); // Sluit de popup
+        } else {
+            const errorData = await response.json();
+            setMessage(`Fout bij het wijzigen van wachtwoord: ${errorData.message}`);
+        }
     } catch (error) {
-      setMessage(`Er is een fout opgetreden: ${error.message}`);
+        setMessage(`Er is een fout opgetreden: ${error.message}`);
     }
-  };
+};
 
   const handleDeleteAccount = async () => {
     if (window.confirm('Weet u zeker dat u uw account wilt verwijderen?')) {
