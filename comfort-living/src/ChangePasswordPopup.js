@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 
 const ChangePasswordPopup = ({ isOpen, onClose, onChangePassword }) => {
+    const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [message, setMessage] = useState('');
@@ -13,7 +14,7 @@ const ChangePasswordPopup = ({ isOpen, onClose, onChangePassword }) => {
             return;
         }
         setMessage(''); // Reset message before calling the function
-        onChangePassword(newPassword);
+        onChangePassword(oldPassword, newPassword); // Pass both old and new passwords
     };
 
     if (!isOpen) return null;
@@ -23,6 +24,15 @@ const ChangePasswordPopup = ({ isOpen, onClose, onChangePassword }) => {
             <div className="popup-inner">
                 <h2>Wachtwoord Wijzigen</h2>
                 <form onSubmit={handleSubmit}>
+                    <div>
+                        <label>Oud Wachtwoord:</label>
+                        <input
+                            type="password"
+                            value={oldPassword}
+                            onChange={(e) => setOldPassword(e.target.value)}
+                            required
+                        />
+                    </div>
                     <div>
                         <label>Nieuw Wachtwoord:</label>
                         <input
