@@ -77,22 +77,7 @@
 }
 
 
-.scroll-container {
-  display: flex;
-  overflow-x: auto;
-  padding: 10px;
-  gap: 10px;
-}
 
-.pand-card {
-  min-width: 200px; 
-  flex: 0 0 auto;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-  padding: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-}
 
 /* Responsive adjustments */
 @media (max-width: 1024px) {

@@ -1,0 +1,60 @@
+.pand-overview {
+    font-size: 30px;
+    font-weight: bold;
+    color: rgb(60,81,76);
+    font-family: 'High Tide', sans-serif;
+    margin-bottom: 0;
+    padding-left: 5px;
+}
+
+.scroll-container {
+    display: flex;
+    overflow-x: auto;
+    padding: 30px;
+    gap: 25px;
+}
+  
+.pand-card {
+    min-width: 400px; 
+    height: 480px;
+    flex: 0 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: rgba(130, 182, 150, 0.2) 0 -25px 18px -14px inset, rgba(49, 63, 54, 0.15) 0 1px 2px, rgba(175, 243, 201, 0.15) 0 2px 4px, rgba(54, 77, 63, 0.15) 0 4px 8px, rgba(92, 255, 155, 0.15) 0 8px 16px, rgba(44, 187, 99, 0.15) 0 16px 32px;
+    background-color: #fff;
+}
+
+.pand-foto {
+    width: 300px;
+    height: auto;
+    max-height: 200px;
+    overflow: hidden;
+}
+
+.spotlight {
+    width: 70%;
+    height: 400px;
+    background-color: #fff;
+    box-shadow: rgba(130, 182, 150, 0.2) 0 -25px 18px -14px inset, rgba(49, 63, 54, 0.15) 0 1px 2px, rgba(175, 243, 201, 0.15) 0 2px 4px, rgba(54, 77, 63, 0.15) 0 4px 8px, rgba(92, 255, 155, 0.15) 0 8px 16px, rgba(44, 187, 99, 0.15) 0 16px 32px;
+    border-radius: 20px;
+    padding: 10px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.spotlight-foto{
+    height: auto;
+    width: 47%;
+    border-radius: 15px;
+    /* position: absolute; */
+    flex: 0 0 auto;
+}
+
+.spotlight-info {
+    float: right;
+    position: relative;
+    flex: 1;
+}
