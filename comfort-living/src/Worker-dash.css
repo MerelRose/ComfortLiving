@@ -2,22 +2,13 @@
     padding: 20px;
     max-width: 800px;
     margin: 0 auto;
+    display: flex;
   }
   
   .inschrijvingen-list {
     display: flex;
     flex-direction: column;
     gap: 20px;
-  }
-  
-  .inschrijving-card {
-    padding: 15px;
-    border: 1px solid #ccc;
-    border-radius: 8px;
-    background-color: #f9f9f9;
-    padding: 20px;
-    width: 800px;
-    margin: 0 auto;
   }
   
   .inschrijving-card h2 {
@@ -47,17 +38,32 @@
   overflow-y: auto;
 }
 
-.pand-item {
+.item {
   cursor: pointer;
   border-radius: 4px;
   transition: color 0.3s;
 }
 
-.pand-item:hover {
+.item:hover {
   color: #ccc;
 }
 
-.pand-item.active {
-  color: #ccc; /* Matches the hover color */
-  font-weight: bold; /* Optionally add more styling for emphasis */
+.item.active {
+  color: #ccc;
+  font-weight: bold;
+}
+
+.inschrijving-card, .serviceverzoek-card {
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  padding: 20px;
+  width: 800px;
+  margin: 0 auto;
+}
+
+.centered-message {
+  text-align: center;
+  color: #666;
 }
