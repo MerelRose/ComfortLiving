@@ -74,7 +74,7 @@ function MyAccount() {
 
       {user ? (
         <div className="user-info">
-          <p><strong>Voor - en achternaam:</strong> {user.voornaam} {user.achternaam}</p>
+          <p><strong>Voor - en achternaam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
           <p><strong>Email:</strong> {user.email || 'Niet beschikbaar'}</p>
           <p><strong>Telefoonnummer:</strong> {user.telefoonnummer || 'Niet beschikbaar'}</p>
           <p><strong>Adres:</strong> {user.huidig_woonadres || 'Niet beschikbaar'}</p>
