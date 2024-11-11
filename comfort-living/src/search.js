@@ -260,13 +260,13 @@ const PandenList = () => {
 </select>
 
             {/* Locatie Filter */}
-            <input 
+            {/* <input 
               type="text" 
               name="locatie" 
               placeholder="Locatie" 
               value={filters.locatie} 
               onChange={handleFilterChange} 
-            />
+            /> */}
 
             {/* Energielabel Filter */}
             <select 
