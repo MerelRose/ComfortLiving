@@ -34,4 +34,30 @@
     font-size: 18px;
     color: #333;
   }
-  
+
+.sidebar {
+  background-color: #f9f9f9;
+  position: absolute;
+  width: 300px;
+  height: 700px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 5px;
+  margin: 10px 0px 0px 0px;
+  overflow-y: auto;
+}
+
+.pand-item {
+  cursor: pointer;
+  border-radius: 4px;
+  transition: color 0.3s;
+}
+
+.pand-item:hover {
+  color: #ccc;
+}
+
+.pand-item.active {
+  color: #ccc; /* Matches the hover color */
+  font-weight: bold; /* Optionally add more styling for emphasis */
+}
