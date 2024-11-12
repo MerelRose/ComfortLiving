@@ -50,13 +50,19 @@ const InschrijvingenList = () => {
     ? serviceverzoeken.filter((req) => req.status === selectedStatus)
     : [];
 
+  // Initialize status counts
+  const statusCounts = {
+    klaar: serviceverzoeken.filter((req) => req.status === 'klaar').length,
+    bezig: serviceverzoeken.filter((req) => req.status === 'bezig').length,
+    nietBegonnen: serviceverzoeken.filter((req) => req.status === 'niet begonnen').length,
+  };
+
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   return (
     <div className='content'>
-      <h1>Inschrijvingen Overzicht</h1>
       <div className='main-container'>
         <div className='sidebar'>
           <h2>Panden</h2>
@@ -81,14 +87,23 @@ const InschrijvingenList = () => {
           </button>
 
           <h2>Serviceverzoeken</h2>
-          <div className={`item ${selectedStatus === 'klaar' ? 'active' : ''}`} onClick={() => setSelectedStatus('klaar')}>
-            Klaar
+          <div
+            className={`item ${selectedStatus === 'klaar' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('klaar')}
+          >
+            Klaar {statusCounts.klaar >= 0 && `(${statusCounts.klaar})`}
           </div>
-          <div className={`item ${selectedStatus === 'bezig' ? 'active' : ''}`} onClick={() => setSelectedStatus('bezig')}>
-            Bezig
+          <div
+            className={`item ${selectedStatus === 'bezig' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('bezig')}
+          >
+            Bezig {statusCounts.bezig >= 0 && `(${statusCounts.bezig})`}
           </div>
-          <div className={`item ${selectedStatus === 'niet begonnen' ? 'active' : ''}`} onClick={() => setSelectedStatus('niet begonnen')}>
-            Niet Begonnen
+          <div
+            className={`item ${selectedStatus === 'niet begonnen' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('niet begonnen')}
+          >
+            Niet Begonnen {statusCounts.nietBegonnen >= 0 && `(${statusCounts.nietBegonnen})`}
           </div>
         </div>
 
