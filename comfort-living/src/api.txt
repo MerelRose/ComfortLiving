@@ -1,0 +1,10 @@
+adres = ["Prins Johan Frisostraat Genemuiden", "Hoofdstraat 2 Amsterdam" ]
+url="https://geocode.maps.co/search?q="+adres[0]+"&api_key=6731fbce688b3964722793kmnb77be1"
+
+
+
+
+KEY:
+6731fbce688b3964722793kmnb77be1
+
+

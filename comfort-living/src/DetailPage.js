@@ -111,6 +111,9 @@ const WoningDetail = () => {
                 <p>Type: {woning.type}</p>
                 <p>Omschrijving: {woning.omschrijving}</p>
                 <p>Prijs: {woning.prijs}</p>
+                <p>energielabel: {woning.prijs}</p>
+                <p>aantal slaapkamers: {woning.prijs}</p>
+                <p>Prijs: {woning.prijs}</p>
 
                 <button className='nav-btn' onClick={handleOpenPopup}>Open Pop-up</button>
 
