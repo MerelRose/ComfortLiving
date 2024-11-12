@@ -10,6 +10,7 @@ import Search from './search';
 import MyAccount from './MyAccount';
 import WarningPopup from './WarningPopup';
 import Home from './Home';
+import Worker from './worker-dash';
 
 function Header({ setIsLoginOpen, setIsRegisterOpen }) {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
@@ -84,6 +85,7 @@ function App() {
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/woning/:id" element={<WoningDetail />} />
           <Route path="/detailpage" element={<WoningDetail />} />
+          <Route path="/worker-dash" element={<Worker />} />
         </Routes>
       </div>
     </>
