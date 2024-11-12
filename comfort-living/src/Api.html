@@ -1,0 +1,36 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geocode API Example</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <script> //https://geocode.maps.co/
+        const adres = ["Prins Johan Frisostraat Genemuiden", "Hoofdstraat 2 Amsterdam"];
+        const apiKey = "6731fbce688b3964722793kmnb77be1";
+
+        const fetchGeocodeData = async (address) => {
+            const url = `https://geocode.maps.co/search?q=${encodeURIComponent(address)}&api_key=${apiKey}`;
+            try {
+                const response = await axios.get(url);
+                console.log(`Geocode data for "${address}":`, response.data);
+            } catch (error) {
+                console.error(`Error fetching data for "${address}":`, error);
+            }
+        };
+
+        const fetchAllAddresses = async () => {
+            for (const address of adres) {
+                await fetchGeocodeData(address);
+            }
+        };
+
+        // fetchAllAddresses();
+
+        fetchGeocodeData(adres[0]);
+    </script>
+</body>
+</html>
