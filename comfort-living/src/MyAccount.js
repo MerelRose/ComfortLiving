@@ -74,13 +74,17 @@ function MyAccount() {
 
       {user ? (
         <div className="user-info">
-          <p><strong>Voor - en achternaam:</strong> {user.voornaam} {user.achternaam}</p>
+          <p><strong>Volledige naam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
           <p><strong>Email:</strong> {user.email || 'Niet beschikbaar'}</p>
           <p><strong>Telefoonnummer:</strong> {user.telefoonnummer || 'Niet beschikbaar'}</p>
           <p><strong>Adres:</strong> {user.huidig_woonadres || 'Niet beschikbaar'}</p>
           <p><strong>Geslacht:</strong> {user.geslacht || 'Niet beschikbaar'}</p>
           <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>  
           
+
+          <p><strong>Voorkeur plaats:</strong> {user.voorkeur_plaats || 'Niet beschikbaar'}</p>
+          <p><strong>Straal voorkeur plaats:</strong> {user.straal_voorkeur_plaats || 'Niet beschikbaar'}</p>
+
           <button className='nav-btn' onClick={() => setIsPopupOpen(true)}>Wachtwoord Wijzigen</button>
           <button className='nav-btn' onClick={handleDeleteAccount}>Account Verwijderen</button>
         </div>
