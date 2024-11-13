@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './search.css';
@@ -6,6 +6,7 @@ import './App.css';
 
 const PandenList = () => {
     const [panden, setPanden] = useState([]);
+    const[originalPanden, setOriginalPanden]= useState([]);
     const [error, setError] = useState(null);
     const [searchTerm, setSearchTerm] = useState('');
     const [searchLocation, setSearchLocation] = useState(''); // Location for search
@@ -22,17 +23,28 @@ const PandenList = () => {
     });
     const [showFilters, setShowFilters] = useState(false);
     const navigate = useNavigate();
+    const hasFetched = useRef(false); // Gebruik een ref om bij te houden of de fetch is uitgevoerd
 
-    useEffect(() => {
-        axios.get('http://localhost:3001/panden')
-            .then((response) => {
+    const fetchData = async () => {             
+            try{
+
+                let response = await  axios.get('http://localhost:3001/panden')
                 console.log("Panden fetched successfully:", response.data);
-                setPanden(response.data);
-            })
-            .catch((error) => {
-                setError(error.message);
+                 setPanden(response.data);
+                 setOriginalPanden(response.data);
+                hasFetched.current = true; // Zet de ref op true na een succesvolle fetch
+            }
+            catch(error) {
+                    setError(error.message);
                 console.error("Error fetching panden:", error);
-            });
+            }
+        }
+
+    useEffect( () => {
+        if (originalPanden.length === 0 && !hasFetched.current)
+        {
+            fetchData();
+        }
     }, []); 
 
     const handleSearch = (event) => {
@@ -50,87 +62,88 @@ const PandenList = () => {
     const toggleFilters = () => {
         setShowFilters(prev => !prev);
     };
+
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
     const fetchGeocodeData = async (address) => {
-      const apiKey = "6731fbce688b3964722793kmnb77be1";
-      const url = `https://geocode.maps.co/search?q=${encodeURIComponent(address + ', Nederland')}&api_key=${apiKey}`;
-      
-      await delay(1100); // 1100 milliseconds
-  
-      try {
-          const response = await axios.get(url);
-          console.log(`Geocode data for "${address}":`, response.data);
-          if (response.data && response.data.length > 0) {
-              const { lat, lon } = response.data[0];
-              console.log(`Coordinates for "${address}":`, lat, lon);
-              return { lat, lon }; // Return latitude and longitude
-          } else {
-              console.error(`No geocode results for "${address}"`);
-              return null;
-          }
-      } catch (error) {
-          console.error(`Error fetching data for "${address}":`, error);
-          return null;
-      }
-  };
+        const apiKey = "6731fbce688b3964722793kmnb77be1";
+        const url = `https://geocode.maps.co/search?q=${encodeURIComponent(address + ', Nederland')}&api_key=${apiKey}`;
+        
+        await delay(1100); // 1100 milliseconds
 
-  const filterPandenByLocation = async () => {
-    if (!searchLocation || !radius) {
-        console.log("Location or radius not provided, skipping location filter.");
-        return; // No location or radius provided
-    }
-
-    // Fetch geocode data for the specified location
-    const geocodeData = await fetchGeocodeData(searchLocation);
-    if (!geocodeData) {
-        console.log(`No geocode data found for "${searchLocation}"`);
-        return; // No geocode data found
-    }
-
-    const { lat, lon } = geocodeData; // Get latitude and longitude
-    console.log(`Coordinates for "${searchLocation}":`, lat, lon);
-
-    // Filter panden based on the radius
-    const filteredPanden = panden.filter(pand => {
-        // Use latitude and longitude from the database
-        const pandLat = parseFloat(pand.latitude); // Latitude from the database
-        const pandLon = parseFloat(pand.longitude); // Longitude from the database
-
-        // Check if pandLat and pandLon are valid numbers
-        if (isNaN(pandLat) || isNaN(pandLon)) {
-            console.log(`Invalid coordinates for pand:`, pand);
-            return false; // Skip this pand if coordinates are invalid 
+        try {
+            const response = await axios.get(url);
+            console.log(`Geocode data for "${address}":`, response.data);
+            if (response.data && response.data.length > 0) {
+                const { lat, lon } = response.data[0];
+                console.log(`Coordinates for "${address}":`, lat, lon);
+                return { lat, lon }; // Return latitude and longitude
+            } else {
+                console.error(`No geocode results for "${address}"`);
+                return null;
+            }
+        } catch (error) {
+            console.error(`Error fetching data for "${address}":`, error);
+            return null;
         }
+    };
 
-        // Calculate distance using the correct order: lat1, lon1, lat2, lon2
-        const distance = getDistanceFromLatLonInKm(lat, lon, pandLat, pandLon);
-        console.log(`Distance from ${searchLocation} to ${pand.straat} ${pand.huisnummer}: ${distance} km`);
+    const filterPandenByLocation = async () => {
+        if (!searchLocation || !radius) {
+            console.log("Location or radius not provided, skipping location filter.");
+            return; // No location or radius provided
+        }
+    
+        // Convert radius to a number
+        const radiusInKm = Number(radius);
+    
+        // Fetch geocode data for the specified location
+        const geocodeData = await fetchGeocodeData(searchLocation);
+        if (!geocodeData) {
+            console.log(`No geocode data found for "${searchLocation}"`);
+            return; // No geocode data found
+        }
+    
+        const { lat, lon } = geocodeData; // Get latitude and longitude
+        console.log(`Coordinates for "${searchLocation}":`, lat, lon);
+    
+        // Filter panden based on the radius
+        const filteredPanden = originalPanden.filter(pand => {
+            const pandLat = parseFloat(pand.latitude); // Latitude from the database
+            const pandLon = parseFloat(pand.longitude); // Longitude from the database
+    
+            if (isNaN(pandLat) || isNaN(pandLon)) {
+                console.log(`Invalid coordinates for pand:`, pand);
+                return false; // Skip this pand if coordinates are invalid 
+            }
+    
+            const distance = getDistanceFromLatLonInKm(lat, lon, pandLat, pandLon);
+            console.log(`Distance from ${searchLocation} to ${pand.straat} ${pand.huisnummer}: ${distance} km`);
+    
+            return distance <= radiusInKm; // Filter based on distance
+        });
+    
+        console.log(`Filtered panden count: ${filteredPanden.length}`);
+        await setPanden(filteredPanden); // Update the state with filtered panden
+    };
 
-        return distance <= radius; // Filter based on distance
-    });
-
-    console.log(`Filtered panden count: ${filteredPanden.length}`);
-    setPanden(filteredPanden); // Update the state with filtered panden
-};
-
-// Function to calculate the distance between two coordinates
-const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of the Earth in km
-    const dLat = (lat2 - lat1) * Math.PI / 180; // Convert degrees to radians
-    const dLon = (lon2 - lon1) * Math.PI / 180; // Convert degrees to radians
-    const a = 
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c; // Distance in km
-};
+    // Function to calculate the distance between two coordinates
+    const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2 ) => {
+        const R = 6371; // Radius of the Earth in km
+        const dLat = (lat2 - lat1) * Math.PI / 180; // Convert degrees to radians
+        const dLon = (lon2 - lon1) * Math.PI / 180; // Convert degrees to radians
+        const a = 
+            Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+            Math.sin(dLon / 2) * Math.sin(dLon / 2);
+        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c; // Distance in km
+    };
 
     const filteredPanden = panden.filter((pand) => {
         const lowerSearchTerm = searchTerm.toLowerCase();
         const matchesSearchTerm = pand.postcode.toLowerCase().includes(lowerSearchTerm) ||
-                           pand.straat.toLowerCase().includes(lowerSearchTerm) ||
-                           pand.plaats.toLowerCase().includes(lowerSearchTerm);
+                            pand.straat.toLowerCase().includes(lowerSearchTerm) ||
+                            pand.plaats.toLowerCase().includes(lowerSearchTerm);
 
         const matchesType = filters.type ? pand.type === filters.type : true;
         const matchesPrijs = (!filters.prijsMin || pand.prijs >= filters.prijsMin) &&
@@ -143,10 +156,22 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
 
         return matchesSearchTerm && matchesType && matchesPrijs && matchesOppervlakte && matchesEnergielabel && matchesSlaapkamers;
     });
+    const fetchOriginalPanden = async () => {
+        try {
+            const response = await axios.get('http://localhost:3001/panden');
+            console.log("Panden fetched successfully:", response.data);
+            return response.data; // Return the original list of panden
+        } catch (error) {
+            console.error("Error fetching original panden:", error);
+            return []; // Return an empty array on error
+        } 
+    };
     const handleFilter = async () => {
         console.log("Filtering panden by location and radius...");
-        await filterPandenByLocation(); // Call the function to filter based on location and radius
-        // You can also call any other filtering functions here if needed
+       // const originalPanden = await fetchOriginalPanden(); // Fetch the original panden again if necessary
+        //await setPanden(originalPanden); // Set the original panden to the state
+     //  await  setPanden( await fetchOriginalPanden());
+        filterPandenByLocation(); // Call the function to filter based on location and radius
     };
     const handleDetailsClick = (id) => {
         navigate(`/woning/${id}`);
@@ -198,40 +223,40 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
                                 >
                                     <option value="">Min prijs</option>
                                     <option value="0" selected="selected">€ 0</option>
-                  <option value="50000">€ 50.000</option>
-                  <option value="75000">€ 75.000</option>
-                  <option value="100000">€ 100.000</option>
-                  <option value="125000">€ 125.000</option>
-                  <option value="150000">€ 150.000</option>
-                  <option value="175000">€ 175.000</option>
-                  <option value="200000">€ 200.000</option>
-                  <option value="225000">€ 225.000</option>
-                  <option value="250000">€ 250.000</option>
-                  <option value="275000">€ 275.000</option>
-                  <option value="300000">€ 300.000</option>
-                  <option value="325000">€ 325.000</option>
-                  <option value="350000">€ 350.000</option>
-                  <option value="375000">€ 375.000</option>
-                  <option value="400000">€ 400.000</option>
-                  <option value="450000">€ 450.000</option>
-                  <option value="500000">€ 500.000</option>
-                  <option value="550000">€ 550.000</option>
-                  <option value="600000">€ 600.000</option>
-                  <option value="650000">€ 650.000</option>
-                  <option value="700000">€ 700.000</option>
-                  <option value="750000">€ 750.000</option>
-                  <option value="800000">€ 800.000</option>
-                  <option value="900000">€ 900.000</option>
-                  <option value="1000000">€ 1.000.000</option>
-                  <option value="1250000">€ 1.250.000</option>
-                  <option value="1500000">€ 1.500.000</option>
-                  <option value="2000000">€ 2.000.000</option>
-                  <option value="2500000">€ 2.500.000</option>
-                  <option value="3000000">€ 3.000.000</option>
-                  <option value="3500000">€ 3.500.000</option>
-                  <option value="4000000">€ 4.000.000</option>
-                  <option value="4500000">€ 4.500.000</option>
-                  <option value="5000000">€ 5.000.000</option>
+                                    <option value="50000">€ 50.000</option>
+                                    <option value="75000">€ 75.000</option>
+                                    <option value="100000">€ 100.000</option>
+                                    <option value="125000">€ 125.000</option>
+                                    <option value="150000">€ 150.000</option>
+                                    <option value="175000">€ 175.000</option>
+                                    <option value="200000">€ 200.000</option>
+                                    <option value="225000">€ 225.000</option>
+                                    <option value="250000">€ 250.000</option>
+                                    <option value=" 275000">€ 275.000</option>
+                                    <option value="300000">€ 300.000</option>
+                                    <option value="325000">€ 325.000</option>
+                                    <option value="350000">€ 350.000</option>
+                                    <option value="375000">€ 375.000</option>
+                                    <option value="400000">€ 400.000</option>
+                                    <option value="450000">€ 450.000</option>
+                                    <option value="500000">€ 500.000</option>
+                                    <option value="550000">€ 550.000</option>
+                                    <option value="600000">€ 600.000</option>
+                                    <option value="650000">€ 650.000</option>
+                                    <option value="700000">€ 700.000</option>
+                                    <option value="750000">€ 750.000</option>
+                                    <option value="800000">€ 800.000</option>
+                                    <option value="900000">€ 900.000</option>
+                                    <option value="1000000">€ 1.000.000</option>
+                                    <option value="1250000">€ 1.250.000</option>
+                                    <option value="1500000">€ 1.500.000</option>
+                                    <option value="2000000">€ 2.000.000</option>
+                                    <option value="2500000">€ 2.500.000</option>
+                                    <option value="3000000">€ 3.000.000</option>
+                                    <option value="3500000">€ 3.500.000</option>
+                                    <option value="4000000">€ 4.000.000</option>
+                                    <option value="4500000">€ 4.500.000</option>
+                                    <option value="5000000">€ 5.000.000</option>
                                 </select>
                                 <select 
                                     name="prijsMax" 
@@ -241,41 +266,40 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
                                     <option value="">Max prijs</option>
                                     <option value="0">€ 0</option>
                                     <option value="50000">€ 50.000</option>
-                  <option value="75000">€ 75.000</option>
-                  <option value="100000">€ 100.000</option>
-                  <option value="125000">€ 125.000</option>
-                  <option value="150000">€ 150.000</option>
-                  <option value="175000">€ 175.000</option>
-                  <option value="200000">€ 200.000</option>
-                  <option value="225000">€ 225.000</option>
-                  <option value="250000">€ 250.000</option>
-                  <option value="275000">€ 275.000</option>
-                  <option value="300000">€ 300.000</option>
-                  <option value="325000">€ 325.000</option>
-                  <option value="350000">€ 350.000</option>
-                  <option value="375000">€ 375.000</option>
-                  <option value="400000">€ 400.000</option>
-                  <option value="450000">€ 450.000</option>
-                  <option value="500000">€ 500.000</option>
-                  <option value="550000">€ 550.000</option>
-                  <option value="600000">€ 600.000</option>
-                  <option value="650000">€ 650.000</option>
-                  <option value="700000">€ 700.000</option>
-                  <option value="750000">€ 750.000</option>
-                  <option value="800000">€ 800.000</option>
-                  <option value="900000">€ 900.000</option>
-                  <option value="1000000">€ 1.000.000</option>
-                  <option value="1250000">€ 1.250.000</option>
-                  <option value="1500000">€ 1.500.000</option>
-                  <option value="2000000">€ 2.000.000</option>
-                  <option value="2500000">€ 2.500.000</option>
-                  <option value="3000000">€ 3.000.000</option>
-                  <option value="3500000">€ 3.500.000</option>
-                  <option value="4000000">€ 4.000.000</option>
-                  <option value="4500000">€ 4.500.000</option>
-                  <option value="5000000">€ 5.000.000</option>
-                  <option value="1000000000">Geen Limiet</option>
-                                    {/* Add more options as needed */}
+                                    <option value="75000">€ 75.000</option>
+                                    <option value="100000">€ 100.000</option>
+                                    <option value="125000">€ 125.000</option>
+                                    <option value="150000">€ 150.000</option>
+                                    <option value="175000">€ 175.000</option>
+                                    <option value="200000">€ 200.000</option>
+                                    <option value="225000">€ 225.000</option>
+                                    <option value="250000">€ 250.000</option>
+                                    <option value="275000">€ 275.000</option>
+                                    <option value="300000">€ 300.000</option>
+                                    <option value="325000">€ 325.000</option>
+                                    <option value="350000">€ 350.000</option>
+                                    <option value="375000">€ 375.000</option>
+                                    <option value="400000">€ 400.000</option>
+                                    <option value="450000">€ 450.000</option>
+                                    <option value="500000">€ 500.000</option>
+                                    <option value="550000">€ 550.000</option>
+                                    <option value="600000">€ 600.000</option>
+                                    <option value="650000">€ 650.000</option>
+                                    <option value="700000">€ 700.000</option>
+                                    <option value="750000">€ 750.000</option>
+                                    <option value="800000">€ 800.000</option>
+                                    <option value="900000">€ 900.000</option>
+                                    <option value="1000000">€ 1.000.000</option>
+                                    <option value="1250000">€ 1.250.000</option>
+                                    <option value="1500000">€ 1.500.000</option>
+                                    <option value="2000000">€ 2.000.000</option>
+                                    <option value="2500000">€ 2.500.000</option>
+                                    <option value="3000000">€ 3.000.000</option>
+                                    <option value="3500000">€ 3.500.000</option>
+                                    <option value="4000000">€ 4.000.000</option>
+                                    <option value="4500000">€ 4.500.000</option>
+                                    <option value="5000000">€ 5.000.000</option>
+                                    <option value="1000000000">Geen Limiet</option>
                                 </select>
                             </>
                         )}
@@ -289,14 +313,13 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
                                     value={filters.prijsMin}
                                 >
                                     <option value="">Min prijs</option>
-                                    <option value="">Min prijs</option>
-                  <option value="0">€0</option>
-                  <option value="500">€500</option>
-                  <option value="1000">€1.000</option>
-                  <option value="1500">€1.500</option>
-                  <option value="2000">€2.000</option>
-                  <option value="3000">€3.000</option>
-                  <option value="">geen min.</option>
+                                    <option value="0">€0</option>
+                                    <option value="500">€500</option>
+                                    <option value="1000">€1.000</option>
+                                    <option value="1500">€1.500</option>
+                                    <option value="2000">€2.000</option>
+                                    <option value="3000">€3.000</option>
+                                    <option value="">geen min.</option>
                                 </select>
                                 <select 
                                     name="prijsMax" 
@@ -306,11 +329,11 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
                                     <option value="">Max prijs</option>
                                     <option value="500">€500</option>
                                     <option value="1000">€1.000</option>
-                  <option value="1500">€1.500</option>
-                  <option value="2000">€2.000</option>
-                  <option value="3000">€3.000</option>
-                  <option value="6000">€6.000</option>
-                  <option value="100000">Geen Max</option>
+                                    <option value="1500">€1.500</option>
+                                    <option value="2000">€2.000</option>
+                                    <option value="3000">€3.000</option>
+                                    <option value="6000">€6.000</option>
+                                    <option value="100000">Geen Max</option>
                                 </select>
                             </>
                         )}
@@ -330,14 +353,14 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
                         >
                             <option value="">Kies Oppervlakte (m²)</option>
                             <option value="0-50">0 - 50 m²</option>
-  <option value="50-75">50 - 75 m²</option>
-  <option value="75-100">75 - 100 m²</option>
-  <option value="100-125">100 - 125 m²</option>
-  <option value="125-150">125 - 150 m²</option>
-  <option value="150-175">150 - 175 m²</option>
-  <option value="175-200">175 - 200 m²</option>
-  <option value="200-250">200 - 250 m²</option>
-  <option value="">Geen Max</option>
+                            <option value="50-75">50 - 75 m²</option>
+                            <option value="75-100">75 - 100 m²</option>
+                            <option value="100-125">100 - 125 m²</option>
+                            <option value="125-150">125 - 150 m²</option>
+                            <option value="150-175">150 - 175 m²</option>
+                            <option value="175-200">175 - 200 m²</option>
+                            <option value="200-250">200 - 250 m²</option>
+                            <option value="">Geen Max</option>
                         </select>
 
                         {/* Energielabel Filter */}
@@ -380,19 +403,25 @@ const getDistanceFromLatLonInKm = (lat1, lon1, lat2, lon2) => {
                         </select>
 
                         {/* Location Input */}
-<input 
-    type="text" 
-    placeholder="Locatie (optioneel)" 
-    value={searchLocation} 
-    onChange={(e) => setSearchLocation(e.target.value)} 
-/>
-<input 
-    type="number" 
-    placeholder="Radius (km, optioneel)" 
-    value={radius} 
+                        <input 
+                            type="text" 
+                            placeholder="Locatie (optioneel)" 
+ value={searchLocation} 
+                            onChange={(e) => setSearchLocation(e.target.value)} 
+                        />
+<select 
+    name="radius" 
     onChange={(e) => setRadius(e.target.value)} 
-/>
-<button onClick={handleFilter} className="filter-button">Zoeken</button>
+    value={radius}
+>
+    <option value="">Selecteer Radius (km)</option>
+    <option value="1">1 km</option>
+    <option value="5">5 km</option>
+    <option value="10">10 km</option>
+    <option value="20">20 km</option>
+    <option value="50">50 km</option>
+</select>
+                        <button onClick={handleFilter} className="filter-button">Zoeken</button>
                     </div>
                 </div>
             )}
