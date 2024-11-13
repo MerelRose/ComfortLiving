@@ -36,7 +36,8 @@ const InschrijvingenList = () => {
       });
   }, []);
 
-  const getUserById = (userId) => klanten.find((klant) => klant.id === userId);  const getPandById = (pandId) => panden.find((pand) => pand.id === pandId);
+  const getUserById = (userId) => klanten.find((klant) => klant.id === userId);
+  const getPandById = (pandId) => panden.find((pand) => pand.id === pandId);
   const getServiceTypeById = (servicetypeId) => servicetypes.find((type) => type.id === servicetypeId);
   const getContractById = (contractId) => contracts.find((contract) => contract.id === contractId);
 
@@ -82,12 +83,11 @@ const InschrijvingenList = () => {
             </div>
           ))}
           <br />
-          <button onClick={() => {
+          {/* <button onClick={() => {
             setSelectedPand(null);
-            setSelectedStatus(null);
-          }} className='nav-btn'>
+            setSelectedStatus(null })} className='nav-btn'>
             Toon alles
-          </button>
+          </button> */}
 
           <h2>Serviceverzoeken</h2>
           <div
@@ -124,8 +124,8 @@ const InschrijvingenList = () => {
               filteredServiceverzoeken.map((req) => {
                 const servicetype = getServiceTypeById(req.servicetype_id);
                 const contract = getContractById(req.contract_id);
-                const klant = contract ? getUserById(contract.klant_id) : null;
-                const pand = contract ? getPandById(contract.pand_id) : null;
+                const klant = contract ? getUserById(contract.klantid) : null;
+                const pand = contract ? getPandById(contract.pandid) : null;
 
                 return (
                   <div key={req.id} className='inschrijving-card'>
@@ -139,7 +139,7 @@ const InschrijvingenList = () => {
                     {klant && (
                       <>
                         <h3>Klantinformatie:</h3>
-                        <p><strong>Naam:</strong> {klant.naam}</p>
+                        <p><strong>Naam:</strong> {klant.voornaam} {klant.tussenvoegsel} {klant.achternaam}</p>
                         <p><strong>Email:</strong> {klant.email}</p>
                       </>
                     )}
@@ -174,7 +174,7 @@ const InschrijvingenList = () => {
                     {user ? (
                       <>
                         <h3>Klantinformatie:</h3>
-                        <p><strong>Naam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
+                        <p><strong>Naam:</strong> {user.voornaam} {user.tussenvoegsel} {user. achternaam}</p>
                         <p><strong>Email:</strong> {user.email}</p>
                       </>
                     ) : (
