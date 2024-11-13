@@ -12,6 +12,7 @@ const InschrijvingenList = () => {
   const [selectedPand, setSelectedPand] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [error, setError] = useState(null);
+  const [newStatus, setNewStatus] = useState(''); // State voor de nieuwe status
 
   useEffect(() => {
     const fetchInschrijvingen = axios.get('http://localhost:3001/inschrijvingen');
@@ -41,6 +42,21 @@ const InschrijvingenList = () => {
   const getServiceTypeById = (servicetypeId) => servicetypes.find((type) => type.id === servicetypeId);
   const getContractById = (contractId) => contracts.find((contract) => contract.id === contractId);
 
+  const updateServiceRequestStatus = (requestId) => {
+    axios.put(`http://localhost:3001/serviceverzoek/${requestId}`, { status: newStatus })
+      .then(response => {
+        // Update de lokale status in de state
+        setServiceverzoeken(prevRequests => 
+          prevRequests.map(req => req.id === requestId ? { ...req, status: newStatus } : req)
+        );
+        setNewStatus(''); // Reset de dropdown na update
+      })
+      .catch(err => {
+        console.error("Error updating status:", err);
+        setError("Er is een fout opgetreden bij het bijwerken van de status.");
+      });
+};
+
   const pandInschrijvingenCount = panden.map((pand) => {
     const count = inschrijvingen.filter((inschrijving) => inschrijving.pandid === pand.id).length;
     return { ...pand, count };
@@ -58,7 +74,7 @@ const InschrijvingenList = () => {
     afgehandeld: serviceverzoeken.filter((req) => req.status === 'afgehandeld').length,
     inbehandeling: serviceverzoeken.filter((req) => req.status === 'in behandeling').length,
     afgewezen: serviceverzoeken.filter((req) => req.status === 'afgewezen').length,
-    aangevraagd: serviceverzoeken.filter((req) => req.status === 'aangevraagd').length,
+    aangevraagd : serviceverzoeken.filter((req) => req.status === 'aangevraagd').length,
   };
 
   if (error) {
@@ -83,12 +99,6 @@ const InschrijvingenList = () => {
             </div>
           ))}
           <br />
-          {/* <button onClick={() => {
-            setSelectedPand(null);
-            setSelectedStatus(null })} className='nav-btn'>
-            Toon alles
-          </button> */}
-
           <h2>Serviceverzoeken</h2>
           <div
             className={`item ${selectedStatus === 'afgehandeld' ? 'active' : ''}`}
@@ -152,6 +162,14 @@ const InschrijvingenList = () => {
                         <p><strong>Prijs:</strong> €{pand.prijs}</p>
                       </>
                     )}
+                    <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+                      <option value="">Selecteer status</option>
+                      <option value="afgehandeld">Afgehandeld</option>
+                      <option value="in behandeling">In Behandeling</option>
+                      <option value="afgewezen">Afgewezen</ option>
+                      <option value="aangevraagd">Aangevraagd</option>
+                    </select>
+                    <button onClick={() => updateServiceRequestStatus(req.id)}>Update Status</button>
                   </div>
                 );
               })
