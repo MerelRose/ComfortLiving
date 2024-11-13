@@ -5,6 +5,7 @@ import './login.css';
 function RegisterForm({ isOpen, togglePopup }) {
   const [formData, setFormData] = useState({
     voornaam: '',
+    tussenvoegsel: '',
     achternaam: '',
     email: '',
     telefoonnummer: '',
@@ -44,6 +45,7 @@ function RegisterForm({ isOpen, togglePopup }) {
       // Automatisch inloggen na succesvolle registratie
       const userInfo = {
         voornaam: data.voornaam || 'Niet beschikbaar',
+        tussenvoegsel: data.tussenvoegsel || 'Niet beschikbaar',
         achternaam: data.achternaam || 'Niet beschikbaar',
         email: data.email,
         telefoonnummer: data.telefoonnummer || 'Niet beschikbaar',
@@ -103,8 +105,9 @@ function RegisterForm({ isOpen, togglePopup }) {
     // Verstuur de registratiegegevens
     registerUser({
       voornaam: formData.voornaam,
-      email: formData.email,
+      tussenvoegsel: formData.tussenvoegsel,
       achternaam: formData.achternaam,
+      email: formData.email,
       geslacht: formData.geslacht,
       geboortedatum: formData.geboortedatum,
       huidig_woonadres: formData.huidig_woonadres,
@@ -128,6 +131,9 @@ function RegisterForm({ isOpen, togglePopup }) {
               <div className='name-container'>
                 <label>Voornaam:</label>
                 <input type="text" name="voornaam" value={formData.voornaam} onChange={handleInputChange} />
+                <br />
+                <label>Tussenvoegsel:</label>
+                <input type="text" name="tussenvoegsel" value={formData.tussenvoegsel} onChange={handleInputChange} />
                 <br />
                 <label>Achternaam:</label>
                 <input type="text" name="achternaam" value={formData.achternaam} onChange={handleInputChange} />

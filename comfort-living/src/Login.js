@@ -85,6 +85,7 @@ function LoginForm({ isOpen, togglePopup }) {
           <br />
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
           {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+          <a type="button" tabindex="0" href="/wsp/password_forgotten">Wachtwoord vergeten?</a><br></br>
           <button type="submit">Login</button>
           <button type="button" onClick={togglePopup}>Sluiten</button>
         </form>
