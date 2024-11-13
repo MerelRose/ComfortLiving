@@ -8,6 +8,7 @@ const InschrijvingenList = () => {
   const [panden, setPanden] = useState([]);
   const [serviceverzoeken, setServiceverzoeken] = useState([]);
   const [servicetypes, setServicetypes] = useState([]);
+  const [contracts, setContracts] = useState([]);
   const [selectedPand, setSelectedPand] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [error, setError] = useState(null);
@@ -18,14 +19,16 @@ const InschrijvingenList = () => {
     const fetchPanden = axios.get('http://localhost:3001/panden');
     const fetchServiceverzoeken = axios.get('http://localhost:3001/serviceverzoek');
     const fetchServicetypes = axios.get('http://localhost:3001/servicetype');
+    const fetchContracts = axios.get('http://localhost:3001/contracten');
 
-    Promise.all([fetchInschrijvingen, fetchKlanten, fetchPanden, fetchServiceverzoeken, fetchServicetypes])
-      .then(([inschrijvingenRes, klantenRes, pandenRes, serviceverzoekenRes, servicetypesRes]) => {
+    Promise.all([fetchInschrijvingen, fetchKlanten, fetchPanden, fetchServiceverzoeken, fetchServicetypes, fetchContracts])
+      .then(([inschrijvingenRes, klantenRes, pandenRes, serviceverzoekenRes, servicetypesRes, contractsRes]) => {
         setInschrijvingen(inschrijvingenRes.data);
         setKlanten(klantenRes.data);
         setPanden(pandenRes.data);
         setServiceverzoeken(serviceverzoekenRes.data);
         setServicetypes(servicetypesRes.data);
+        setContracts(contractsRes.data);
       })
       .catch((err) => {
         setError(err.message);
@@ -33,9 +36,9 @@ const InschrijvingenList = () => {
       });
   }, []);
 
-  const getUserById = (userId) => klanten.find((klant) => klant.id === userId);
-  const getPandById = (pandId) => panden.find((pand) => pand.id === pandId);
+  const getUserById = (userId) => klanten.find((klant) => klant.id === userId);  const getPandById = (pandId) => panden.find((pand) => pand.id === pandId);
   const getServiceTypeById = (servicetypeId) => servicetypes.find((type) => type.id === servicetypeId);
+  const getContractById = (contractId) => contracts.find((contract) => contract.id === contractId);
 
   const pandInschrijvingenCount = panden.map((pand) => {
     const count = inschrijvingen.filter((inschrijving) => inschrijving.pandid === pand.id).length;
@@ -50,7 +53,6 @@ const InschrijvingenList = () => {
     ? serviceverzoeken.filter((req) => req.status === selectedStatus)
     : [];
 
-  // Initialize status counts
   const statusCounts = {
     afgehandeld: serviceverzoeken.filter((req) => req.status === 'afgehandeld').length,
     inbehandeling: serviceverzoeken.filter((req) => req.status === 'in behandeling').length,
@@ -121,6 +123,9 @@ const InschrijvingenList = () => {
             ) : (
               filteredServiceverzoeken.map((req) => {
                 const servicetype = getServiceTypeById(req.servicetype_id);
+                const contract = getContractById(req.contract_id);
+                const klant = contract ? getUserById(contract.klant_id) : null;
+                const pand = contract ? getPandById(contract.pand_id) : null;
 
                 return (
                   <div key={req.id} className='inschrijving-card'>
@@ -131,6 +136,22 @@ const InschrijvingenList = () => {
                     <p><strong>Datum aanvraag:</strong> {req.datum_aanvraag}</p>
                     <p><strong>Datum afhandeling:</strong> {req.datum_afhandeling}</p>
                     <p><strong>Service Type:</strong> {servicetype ? servicetype.omschrijving : 'Onbekend'}</p>
+                    {klant && (
+                      <>
+                        <h3>Klantinformatie:</h3>
+                        <p><strong>Naam:</strong> {klant.naam}</p>
+                        <p><strong>Email:</strong> {klant.email}</p>
+                      </>
+                    )}
+                    {pand && (
+                      <>
+                        <h3>Pandinformatie:</h3>
+                        <p><strong>Adres:</strong> {pand.straat} {pand.huisnummer}, {pand.plaats}</p>
+                        <p><strong>Postcode:</strong> {pand.postcode}</p>
+                        <p><strong>Type:</strong> {pand.type}</p>
+                        <p><strong>Prijs:</strong> €{pand.prijs}</p>
+                      </>
+                    )}
                   </div>
                 );
               })
@@ -153,7 +174,7 @@ const InschrijvingenList = () => {
                     {user ? (
                       <>
                         <h3>Klantinformatie:</h3>
-                        <p><strong>Naam:</strong> {user.naam}</p>
+                        <p><strong>Naam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
                         <p><strong>Email:</strong> {user.email}</p>
                       </>
                     ) : (
