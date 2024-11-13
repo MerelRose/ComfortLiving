@@ -50,13 +50,20 @@ const InschrijvingenList = () => {
     ? serviceverzoeken.filter((req) => req.status === selectedStatus)
     : [];
 
+  // Initialize status counts
+  const statusCounts = {
+    afgehandeld: serviceverzoeken.filter((req) => req.status === 'afgehandeld').length,
+    inbehandeling: serviceverzoeken.filter((req) => req.status === 'in behandeling').length,
+    afgewezen: serviceverzoeken.filter((req) => req.status === 'afgewezen').length,
+    aangevraagd: serviceverzoeken.filter((req) => req.status === 'aangevraagd').length,
+  };
+
   if (error) {
     return <div>Error: {error}</div>;
   }
 
   return (
     <div className='content'>
-      <h1>Inschrijvingen Overzicht</h1>
       <div className='main-container'>
         <div className='sidebar'>
           <h2>Panden</h2>
@@ -81,14 +88,29 @@ const InschrijvingenList = () => {
           </button>
 
           <h2>Serviceverzoeken</h2>
-          <div className={`item ${selectedStatus === 'klaar' ? 'active' : ''}`} onClick={() => setSelectedStatus('klaar')}>
-            Klaar
+          <div
+            className={`item ${selectedStatus === 'afgehandeld' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('afgehandeld')}
+          >
+            Afgehandeld {statusCounts.afgehandeld >= 0 && `(${statusCounts.afgehandeld})`}
           </div>
-          <div className={`item ${selectedStatus === 'bezig' ? 'active' : ''}`} onClick={() => setSelectedStatus('bezig')}>
-            Bezig
+          <div
+            className={`item ${selectedStatus === 'in behandeling' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('in behandeling')}
+          >
+            In Behandeling {statusCounts.inbehandeling >= 0 && `(${statusCounts.inbehandeling})`}
           </div>
-          <div className={`item ${selectedStatus === 'niet begonnen' ? 'active' : ''}`} onClick={() => setSelectedStatus('niet begonnen')}>
-            Niet Begonnen
+          <div
+            className={`item ${selectedStatus === 'afgewezen' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('afgewezen')}
+          >
+            Afgewezen {statusCounts.afgewezen >= 0 && `(${statusCounts.afgewezen})`}
+          </div>
+          <div
+            className={`item ${selectedStatus === 'aangevraagd' ? 'active' : ''}`}
+            onClick={() => setSelectedStatus('aangevraagd')}
+          >
+            Aangevraagd {statusCounts.aangevraagd >= 0 && `(${statusCounts.aangevraagd})`}
           </div>
         </div>
 
