@@ -64,6 +64,37 @@ function MyAccount() {
     }
   };
 
+  const handleResendEmail = async () => {
+    try {
+      const response = await fetch('http://localhost:3001/klanten', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: user.email,
+          voornaam: user.voornaam,
+          achternaam: user.achternaam,
+          geslacht: user.geslacht,
+          geboortedatum: user.geboortedatum,
+          huidig_woonadres: user.huidig_woonadres,
+          telefoonnummer: user.telefoonnummer,
+          wachtwoord: 'placeholderPassword', // Plaatsvervangend wachtwoord om validatie te passeren
+        }),
+      });
+  
+      if (response.ok) {
+        setMessage('Verificatie e-mail is opnieuw verstuurd! Controleer je inbox & spam.');
+      } else {
+        const errorData = await response.json();
+        setMessage(`Fout bij het opnieuw versturen van verificatie e-mail: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error('Fout bij opnieuw versturen verificatie e-mail:', error);
+      setMessage('Er is iets misgegaan bij het opnieuw versturen van de verificatie e-mail.');
+    }
+  };
+
   if (!isLoggedIn) {
     return <div className='content'>U bent niet ingelogd. Log in om uw account te bekijken.</div>;
   }
@@ -87,6 +118,7 @@ function MyAccount() {
 
           <button className='nav-btn' onClick={() => setIsPopupOpen(true)}>Wachtwoord Wijzigen</button>
           <button className='nav-btn' onClick={handleDeleteAccount}>Account Verwijderen</button>
+          <button className='nav-btn' onClick={handleResendEmail}>Verificatie e-mail opnieuw versturen</button>
         </div>
       ) : (
         <p>Geen gebruikersinformatie beschikbaar.</p>
