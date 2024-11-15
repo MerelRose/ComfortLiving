@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 
 function LoginForm({ isOpen, togglePopup }) {
@@ -12,9 +12,12 @@ function LoginForm({ isOpen, togglePopup }) {
     event.preventDefault();
     setErrorMessage('');
     setSuccessMessage('');
+
+    const employeeEndpoint = 'http://localhost:3001/medewerkers/login';
+    const customerEndpoint = 'http://localhost:3001/klanten/login';
     
     try {
-      const response = await fetch('http://localhost:3001/klanten/login', {
+      let response = await fetch(employeeEndpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -24,37 +27,52 @@ function LoginForm({ isOpen, togglePopup }) {
           wachtwoord: password,
         }),
       });
-  
+
+      if (!response.ok) {
+        response = await fetch(customerEndpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: username,
+            wachtwoord: password,
+          }),
+        });
+      }
+
       const responseText = await response.text();
-      console.log('Server response:', responseText); // Log de ruwe server respons
-  
       let userData;
       try {
         userData = JSON.parse(responseText);
       } catch (e) {
-        console.log('Response is niet in JSON formaat:', responseText);
         userData = null;
       }
-  
+
       if (response.ok) {
         if (userData) {
           login(userData);
         } else {
-          // Als er geen userData is, log toch in met minimale gegevens
           login({ isLoggedIn: true });
         }
         sessionStorage.setItem('user', JSON.stringify({ isLoggedIn: true }));
-        console.log('Succesvol ingelogd.');
         setSuccessMessage('Login succesvol!');
         togglePopup();
       } else {
         setErrorMessage(userData?.message || responseText || 'Ongeldige inloggegevens');
       }
     } catch (error) {
-      console.error('Fout bij het inloggen:', error);
       setErrorMessage('Er is iets misgegaan. Probeer het opnieuw.');
     }
   };
+
+  useEffect(() => {
+    // Clear messages when the popup opens
+    if (isOpen) {
+      setErrorMessage('');
+      setSuccessMessage('');
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -85,9 +103,8 @@ function LoginForm({ isOpen, togglePopup }) {
           <br />
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
           {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
-          <a type="button" tabindex="0" href="/wsp/password_forgotten">Wachtwoord vergeten?</a><br></br>
-          <button type="submit">Login</button>
-          <button type="button" onClick={togglePopup}>Sluiten</button>
+          <a type="button" tabindex="0" href="/wsp/password_forgotten">Wachtwoord vergeten?</a>
+          <button type="submit">Inloggen</button>
         </form>
       </div>
     </div>
