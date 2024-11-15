@@ -4,7 +4,6 @@ import './App.css';
 import ChangePasswordPopup from './ChangePasswordPopup'; 
 import ServiceVerzoeken from './ServiceVerzoeken'; // Zorg ervoor dat je de juiste bestandsnaam gebruikt
 
-
 const formatDate = (dateString) => {
   if (!dateString) return 'Niet beschikbaar';
   const date = new Date(dateString);
