@@ -2,6 +2,7 @@ import React, { useContext, useState } from 'react';
 import { AuthContext } from './AuthContext';
 import './App.css';
 import ChangePasswordPopup from './ChangePasswordPopup'; 
+import ServiceVerzoeken from './ServiceVerzoeken'; // Zorg ervoor dat je de juiste bestandsnaam gebruikt
 
 const formatDate = (dateString) => {
   if (!dateString) return 'Niet beschikbaar';
@@ -15,6 +16,7 @@ const formatDate = (dateString) => {
 function MyAccount() {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [isServicePopupOpen, setIsServicePopupOpen] = useState(false); // State voor serviceverzoeken popup
   const [message, setMessage] = useState('');
 
   const handleChangePassword = async (oldPassword, newPassword) => {
@@ -41,7 +43,7 @@ function MyAccount() {
     } catch (error) {
         setMessage(`Er is een fout opgetreden: ${error.message}`);
     }
-};
+  };
 
   const handleDeleteAccount = async () => {
     if (window.confirm('Weet u zeker dat u uw account wilt verwijderen?')) {
@@ -105,20 +107,19 @@ function MyAccount() {
 
       {user ? (
         <div className="user-info">
-          <p><strong>Volledige naam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
+          <p><strong>Volledige naam:</strong> {user.voornaam} { user.tussenvoegsel} {user.achternaam}</p>
           <p><strong>Email:</strong> {user.email || 'Niet beschikbaar'}</p>
           <p><strong>Telefoonnummer:</strong> {user.telefoonnummer || 'Niet beschikbaar'}</p>
           <p><strong>Adres:</strong> {user.huidig_woonadres || 'Niet beschikbaar'}</p>
           <p><strong>Geslacht:</strong> {user.geslacht || 'Niet beschikbaar'}</p>
-          <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>  
-          
-
+          <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>
           <p><strong>Voorkeur plaats:</strong> {user.voorkeur_plaats || 'Niet beschikbaar'}</p>
           <p><strong>Straal voorkeur plaats:</strong> {user.straal_voorkeur_plaats || 'Niet beschikbaar'}</p>
 
           <button className='nav-btn' onClick={() => setIsPopupOpen(true)}>Wachtwoord Wijzigen</button>
           <button className='nav-btn' onClick={handleDeleteAccount}>Account Verwijderen</button>
           <button className='nav-btn' onClick={handleResendEmail}>Verificatie e-mail opnieuw versturen</button>
+          <button className='nav-btn' onClick={() => setIsServicePopupOpen(true)}>Indienen Serviceverzoek</button>
         </div>
       ) : (
         <p>Geen gebruikersinformatie beschikbaar.</p>
@@ -129,6 +130,12 @@ function MyAccount() {
           isOpen={isPopupOpen}
           onClose={() => setIsPopupOpen(false)}
           onChangePassword={handleChangePassword}
+        />
+      )}
+      {isServicePopupOpen && (
+        <ServiceVerzoeken
+          user={user}
+          onClose={() => setIsServicePopupOpen(false)}
         />
       )}
       {message && <p>{message}</p>}

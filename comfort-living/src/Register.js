@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { AuthContext } from './AuthContext'; // Voeg deze regel toe om toegang te krijgen tot de login-functionaliteit
+import { AuthContext } from './AuthContext'; // Access to the login functionality
 import './login.css';
 
 function RegisterForm({ isOpen, togglePopup }) {
@@ -17,11 +17,12 @@ function RegisterForm({ isOpen, togglePopup }) {
 
   const [bevestigWachtwoord, setBevestigWachtwoord] = useState('');
   const [message, setMessage] = useState('');
-  const { login } = useContext(AuthContext); // Haal de login-functie op uit de AuthContext
+  const [successMessage, setSuccessMessage] = useState(''); // State for success message
+  const { login } = useContext(AuthContext);
 
-  const registerUser = async (userData) => {
+  const registerUser  = async (userData) => {
     try {
-      console.log('User data being sent:', userData);
+      console.log('User  data being sent:', userData);
   
       const response = await fetch('http://localhost:3001/klanten', {
         method: 'POST',
@@ -40,9 +41,9 @@ function RegisterForm({ isOpen, togglePopup }) {
   
       const data = JSON.parse(responseBody);
       setMessage('Registratie succesvol! Welkom ' + data.voornaam);
+      setSuccessMessage('Je account is succesvol aangemaakt.'); // Set success message
       console.log('Succesvolle registratie:', data);
   
-      // Automatisch inloggen na succesvolle registratie
       const userInfo = {
         voornaam: data.voornaam || 'Niet beschikbaar',
         tussenvoegsel: data.tussenvoegsel || 'Niet beschikbaar',
@@ -55,24 +56,24 @@ function RegisterForm({ isOpen, togglePopup }) {
         isLoggedIn: true,
       };
   
-      // Sla de gebruikersinformatie op in sessionStorage
       sessionStorage.setItem('user', JSON.stringify(userInfo));
-  
-      // Roep login functie aan met volledige gebruikersinformatie
       login(userInfo);
   
-      togglePopup(); // Sluit het popup-formulier
-  
+      // Close the popup after a short delay to allow the user to see the success message
+      setTimeout(() => {
+        togglePopup(); // Close the popup
+      }, 20); // Delay of 2 seconds
+
     } catch (error) {
       console.error('Fout bij registratie:', error);
       setMessage('Er is iets misgegaan tijdens de registratie.');
     }
   };
-  
+
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // Valideer de velden zoals in de oorspronkelijke code
+    // Validate fields
     if (!formData.geboortedatum) {
       setMessage("Selecteer een geldige geboortedatum.");
       return;
@@ -102,9 +103,16 @@ function RegisterForm({ isOpen, togglePopup }) {
       return;
     }
 
-    // Verstuur de registratiegegevens
-    registerUser({
-      voornaam: formData.voornaam,
+    // Validate phone number
+    const phoneRegex = /^06[0-9]{8}$/;
+    if (!phoneRegex.test(formData.telefoonnummer)) {
+      setMessage("Voer een geldig Nederlands telefoonnummer in (bijv. 0612345678).");
+      return;
+    }
+
+    // Send registration data
+    registerUser ({
+ voornaam: formData.voornaam,
       tussenvoegsel: formData.tussenvoegsel,
       achternaam: formData.achternaam,
       email: formData.email,
@@ -149,7 +157,7 @@ function RegisterForm({ isOpen, togglePopup }) {
               <input type="password" name="bevestigWachtwoord" value={bevestigWachtwoord} onChange={(e) => setBevestigWachtwoord(e.target.value)} />
               <br />
               <label>Telefoonnummer:</label>
-              <input type="tel" inputMode='numeric' name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} />
+              <input type="tel" inputMode='numeric' name="telefoonnummer" value={formData.telefoonnummer} onChange={handleInputChange} required pattern="06[0-9]{8}" />
               <br />
               <label>Huidig woonadres:</label>
               <input type="text" name="huidig_woonadres" value={formData.huidig_woonadres} onChange={handleInputChange} />
@@ -170,6 +178,7 @@ function RegisterForm({ isOpen, togglePopup }) {
               <button type="button" onClick={togglePopup}>Sluiten</button>
             </form>
             {message && <p>{message}</p>}
+            {successMessage && <p>{successMessage}</p>} {/* Display success message */}
           </div>
         </div>
       )}
