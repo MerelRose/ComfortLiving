@@ -68,7 +68,7 @@ function App() {
   useEffect(() => {
     const storedUser = sessionStorage.getItem('user');
     if (storedUser && !isLoggedIn && location.pathname === '/') {
-      navigate('/my-account');
+      navigate('/');
     }
   }, [isLoggedIn, location.pathname, navigate]);
 
