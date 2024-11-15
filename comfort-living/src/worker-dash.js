@@ -48,8 +48,11 @@ const InschrijvingenList = () => {
   const getContractById = (contractId) => contracts.find((contract) => contract.id === contractId);
 
   const updateServiceRequestStatus = (requestId) => {
+    console.log("Request ID:", requestId);
+    console.log("Nieuwe status:", newStatus);
     axios.put(`http://localhost:3001/serviceverzoek/${requestId}`, { status: newStatus })
       .then(response => {
+        console.log("Update succes:", response.data);
         setServiceverzoeken(prevRequests => 
           prevRequests.map(req => req.id === requestId ? { ...req, status: newStatus } : req)
         );
@@ -60,6 +63,7 @@ const InschrijvingenList = () => {
         setError("Er is een fout opgetreden bij het bijwerken van de status.");
       });
   };
+  
 
   const planBezichtiging = (inschrijvingId) => {
     if (!selectedDate) {
@@ -184,7 +188,13 @@ const InschrijvingenList = () => {
                         <p><strong>Prijs:</strong> €{pand.prijs}</p>
                       </>
                     )}
-                    <select value={newStatus} onChange={(e) => setNewStatus(e.target.value)}>
+                    <select 
+                      value={newStatus} 
+                      onChange={(e) => {
+                        console.log("Selected status:", e.target.value);
+                        setNewStatus(e.target.value);
+                      }}
+                    >
                       <option value="">Selecteer status</option>
                       <option value="afgehandeld">Afgehandeld</option>
                       <option value="in behandeling">In Behandeling</option>
