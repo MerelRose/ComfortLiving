@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react'; 
 import axios from 'axios';
+import moment from 'moment';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import './Worker-dash.css';
 
 const InschrijvingenList = () => {
@@ -12,7 +15,9 @@ const InschrijvingenList = () => {
   const [selectedPand, setSelectedPand] = useState(null);
   const [selectedStatus, setSelectedStatus] = useState(null);
   const [error, setError] = useState(null);
-  const [newStatus, setNewStatus] = useState(''); // State voor de nieuwe status
+  const [newStatus, setNewStatus] = useState('');
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
     const fetchInschrijvingen = axios.get('http://localhost:3001/inschrijvingen');
@@ -45,16 +50,33 @@ const InschrijvingenList = () => {
   const updateServiceRequestStatus = (requestId) => {
     axios.put(`http://localhost:3001/serviceverzoek/${requestId}`, { status: newStatus })
       .then(response => {
-        // Update de lokale status in de state
         setServiceverzoeken(prevRequests => 
           prevRequests.map(req => req.id === requestId ? { ...req, status: newStatus } : req)
         );
-        setNewStatus(''); // Reset de dropdown na update
+        setNewStatus('');
       })
       .catch(err => {
         console.error("Error updating status:", err);
         setError("Er is een fout opgetreden bij het bijwerken van de status.");
       });
+  };
+
+  const planBezichtiging = (inschrijvingId) => {
+    if (!selectedDate) {
+        alert("Selecteer alstublieft een datum en tijd.");
+        return;
+    }
+
+    const bezichtiging = moment(selectedDate).format('YYYY-MM-DD HH:mm:ss.SSSSSS');
+
+    axios.put(`http://localhost:3001/inschrijvingen/${inschrijvingId}`, { bezichtiging })
+        .then(response => {
+            // Update the local state with the updated inschrijving
+        })
+        .catch(err => {
+            console.error("Error planning bezichtiging:", err);
+            setError("Er is een fout opgetreden bij het plannen van de bezichtiging.");
+        });
 };
 
   const pandInschrijvingenCount = panden.map((pand) => {
@@ -74,7 +96,7 @@ const InschrijvingenList = () => {
     afgehandeld: serviceverzoeken.filter((req) => req.status === 'afgehandeld').length,
     inbehandeling: serviceverzoeken.filter((req) => req.status === 'in behandeling').length,
     afgewezen: serviceverzoeken.filter((req) => req.status === 'afgewezen').length,
-    aangevraagd : serviceverzoeken.filter((req) => req.status === 'aangevraagd').length,
+    aangevraagd: serviceverzoeken.filter((req) => req.status === 'aangevraagd').length,
   };
 
   if (error) {
@@ -142,7 +164,7 @@ const InschrijvingenList = () => {
                     <h2>Serviceverzoek #{req.id}</h2>
                     <p><strong>Beschrijving:</strong> {req.description}</p>
                     <p><strong>Status:</strong> {req.status}</p>
-                    <p><strong>Contract_id:</strong> {req.contract_id}</p>
+                    <p><strong>Contract _id:</strong> {req.contract_id}</p>
                     <p><strong>Datum aanvraag:</strong> {req.datum_aanvraag}</p>
                     <p><strong>Datum afhandeling:</strong> {req.datum_afhandeling}</p>
                     <p><strong>Service Type:</strong> {servicetype ? servicetype.omschrijving : 'Onbekend'}</p>
@@ -166,7 +188,7 @@ const InschrijvingenList = () => {
                       <option value="">Selecteer status</option>
                       <option value="afgehandeld">Afgehandeld</option>
                       <option value="in behandeling">In Behandeling</option>
-                      <option value="afgewezen">Afgewezen</ option>
+                      <option value="afgewezen">Afgewezen</option>
                       <option value="aangevraagd">Aangevraagd</option>
                     </select>
                     <button onClick={() => updateServiceRequestStatus(req.id)}>Update Status</button>
@@ -188,11 +210,12 @@ const InschrijvingenList = () => {
                     <p><strong>Datum:</strong> {new Date(inschrijving.datum).toLocaleDateString()}</p>
                     <p><strong>Hoeveel Personen:</strong> {inschrijving.hoeveel_personen}</p>
                     <p><strong>Jaar Inkomen:</strong> {inschrijving.jaar_inkomen || "Niet opgegeven"}</p>
+                    <p><strong>Bezichtiging:</strong> {inschrijving.bezichtiging || "Niet gepland"}</p>
                     
                     {user ? (
                       <>
                         <h3>Klantinformatie:</h3>
-                        <p><strong>Naam:</strong> {user.voornaam} {user.tussenvoegsel} {user. achternaam}</p>
+                        <p><strong>Naam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
                         <p><strong>Email:</strong> {user.email}</p>
                       </>
                     ) : (
@@ -209,6 +232,22 @@ const InschrijvingenList = () => {
                       </>
                     ) : (
                       <p>Pandinformatie niet beschikbaar</p>
+                    )}
+                    <button onClick={() => setShowCalendar(true)}>Plan Bezichtiging</button>
+                    {showCalendar && (
+                      <div>
+                        <DatePicker
+                          selected={selectedDate}
+                          onChange={(date) => setSelectedDate(date)}
+                          showTimeSelect
+                          dateFormat="Pp"
+                          timeFormat="HH:mm"
+                          timeIntervals={15}
+                          placeholderText="Selecteer datum en tijd"
+                        />
+                        <button onClick={() => planBezichtiging(inschrijving.id)}>Bevestig Bezichtiging</button>
+                        <button onClick={() => setShowCalendar(false)}>Annuleer</button>
+                      </div>
                     )}
                   </div>
                 );
