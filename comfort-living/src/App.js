@@ -29,6 +29,7 @@ function Header({ setIsLoginOpen, setIsRegisterOpen }) {
         <div className="button-group">
           {isLoggedIn ? (
             <>
+              <span className="welcome-message">Welkom, {user.voornaam}!</span>
               <button className="nav-btn" onClick={handleLogout}>Uitloggen</button>
               <button className="nav-btn" onClick={() => navigate('/my-account')}>Mijn Account</button>
             </>
@@ -67,7 +68,7 @@ function App() {
   useEffect(() => {
     const storedUser = sessionStorage.getItem('user');
     if (storedUser && !isLoggedIn && location.pathname === '/') {
-      navigate('/my-account');
+      navigate('/');
     }
   }, [isLoggedIn, location.pathname, navigate]);
 
