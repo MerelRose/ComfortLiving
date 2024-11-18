@@ -40,29 +40,29 @@ function RegisterForm({ isOpen, togglePopup }) {
       }
   
       const data = JSON.parse(responseBody);
-      setMessage('Registratie succesvol! Welkom ' + data.voornaam);
+      setMessage('Registratie succesvol! Welkom ' + data.klant.voornaam);
       setSuccessMessage('Je account is succesvol aangemaakt.'); // Set success message
       console.log('Succesvolle registratie:', data);
   
       const userInfo = {
-        voornaam: data.voornaam || 'Niet beschikbaar',
-        tussenvoegsel: data.tussenvoegsel || 'Niet beschikbaar',
-        achternaam: data.achternaam || 'Niet beschikbaar',
-        email: data.email,
-        telefoonnummer: data.telefoonnummer || 'Niet beschikbaar',
-        huidig_woonadres: data.huidig_woonadres || 'Niet beschikbaar',
-        geslacht: data.geslacht || 'Niet beschikbaar',
-        geboortedatum: data.geboortedatum || 'Niet beschikbaar',
+        voornaam: data.klant.voornaam || 'Niet beschikbaar',
+        tussenvoegsel: data.klant.tussenvoegsel || 'Niet beschikbaar',
+        achternaam: data.klant.achternaam || 'Niet beschikbaar',
+        email: data.klant.email,
+        telefoonnummer: data.klant.telefoonnummer || 'Niet beschikbaar',
+        huidig_woonadres: data.klant.huidig_woonadres || 'Niet beschikbaar',
+        geslacht: data.klant.geslacht || 'Niet beschikbaar',
+        geboortedatum: data.klant.geboortedatum || 'Niet beschikbaar',
         isLoggedIn: true,
       };
   
       sessionStorage.setItem('user', JSON.stringify(userInfo));
-      login(userInfo);
+      login(userInfo); // Directly log in the user with the correct data
   
       // Close the popup after a short delay to allow the user to see the success message
       setTimeout(() => {
         togglePopup(); // Close the popup
-      }, 20); // Delay of 2 seconds
+      }, 2000); // Delay of 2 seconds
 
     } catch (error) {
       console.error('Fout bij registratie:', error);
@@ -112,7 +112,7 @@ function RegisterForm({ isOpen, togglePopup }) {
 
     // Send registration data
     registerUser ({
- voornaam: formData.voornaam,
+      voornaam: formData.voornaam ,
       tussenvoegsel: formData.tussenvoegsel,
       achternaam: formData.achternaam,
       email: formData.email,
@@ -178,7 +178,7 @@ function RegisterForm({ isOpen, togglePopup }) {
               <button type="button" onClick={togglePopup}>Sluiten</button>
             </form>
             {message && <p>{message}</p>}
-            {successMessage && <p>{successMessage}</p>} {/* Display success message */}
+            {successMessage && <p>{successMessage}</p>} 
           </div>
         </div>
       )}

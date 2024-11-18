@@ -23,11 +23,11 @@ export const AuthProvider = ({ children }) => {
   
   const login = (userData) => {
     console.log('Login functie aangeroepen met:', userData);
-    setUser(userData);
+    setUser (userData);
     setIsLoggedIn(true);
     localStorage.setItem('user', JSON.stringify(userData));
     console.log('Gebruiker ingelogd en opgeslagen:', userData);
-  };
+};
 
   const logout = () => {
     setUser(null);
