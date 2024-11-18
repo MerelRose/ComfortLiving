@@ -32,6 +32,9 @@ function Header({ setIsLoginOpen, setIsRegisterOpen }) {
               <span className="welcome-message">Welkom, {user.voornaam}!</span>
               <button className="nav-btn" onClick={handleLogout}>Uitloggen</button>
               <button className="nav-btn" onClick={() => navigate('/my-account')}>Mijn Account</button>
+              {user.isEmployee && ( // Voeg deze regel toe
+                <button className="nav-btn" onClick={() => navigate('/worker-dash')}>Worker Dashboard</button>
+              )}
             </>
           ) : (
             <>
@@ -86,7 +89,7 @@ function App() {
           <Route path="/woning/:id" element={<WoningDetail />} />
           <Route path="/detailpage" element={<WoningDetail />} />
           <Route path="/worker-dash" element={<Worker />} />
-        </Routes>
+          </Routes>
       </div>
     </>
   );

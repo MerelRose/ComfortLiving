@@ -28,6 +28,8 @@ function LoginForm({ isOpen, togglePopup }) {
         }),
       });
 
+      let isEmployee = false; // Variabele om bij te houden of de gebruiker een medewerker is
+
       if (!response.ok) {
         response = await fetch(customerEndpoint, {
           method: 'POST',
@@ -37,8 +39,10 @@ function LoginForm({ isOpen, togglePopup }) {
           body: JSON.stringify({
             email: username,
             wachtwoord: password,
-          }),
+          })
         });
+      } else {
+        isEmployee = true; // Als de response ok is, is de gebruiker een medewerker
       }
 
       const responseText = await response.text();
@@ -51,11 +55,11 @@ function LoginForm({ isOpen, togglePopup }) {
 
       if (response.ok) {
         if (userData) {
-          login(userData);
+          login({ ...userData, isEmployee }); // Voeg isEmployee toe aan de login
         } else {
-          login({ isLoggedIn: true });
+          login({ isLoggedIn: true, isEmployee }); // Zorg ervoor dat isEmployee ook hier wordt toegevoegd
         }
-        sessionStorage.setItem('user', JSON.stringify({ isLoggedIn: true }));
+        sessionStorage.setItem('user', JSON.stringify({ isLoggedIn: true, isEmployee })); // Sla isEmployee op in sessionStorage
         setSuccessMessage('Login succesvol!');
         togglePopup();
       } else {
