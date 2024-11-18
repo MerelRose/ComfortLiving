@@ -81,37 +81,81 @@ const InschrijvingenList = () => {
   const updateServiceRequestStatus = (requestId) => {
     console.log("Request ID:", requestId);
     console.log("Nieuwe status:", newStatus);
-    axios.put(`http://localhost:3001/serviceverzoek/${requestId}`, { status: newStatus })
-      .then(response => {
-        console.log("Update succes:", response.data);
-        setServiceverzoeken(prevRequests => 
-          prevRequests.map(req => req.id === requestId ? { ...req, status: newStatus } : req)
-        );
-        setNewStatus('');
-      })
-      .catch(err => {
-        console.error("Error updating status:", err);
-        setError("Er is een fout opgetreden bij het bijwerken van de status.");
-      });
-  };
-  
 
-  const planBezichtiging = (inschrijvingId) => {
-    if (!selectedDate) {
-        alert("Selecteer alstublieft een datum en tijd.");
+    if (!newStatus) {
+        console.error("Nieuwe status is niet gedefinieerd.");
         return;
     }
 
-    const bezichtiging = moment(selectedDate).format('YYYY-MM-DD HH:mm:ss.SSSSSS');
+    axios.put(`http://localhost:3001/serviceverzoek/${requestId}`, { status: newStatus }, {
+        headers: {
+            "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+            "Content-Type": "application/json"
+        }
+    })
+    .then(response => {
+        console.log("Update succes:", response.data);
+        setServiceverzoeken(prevRequests => 
+            prevRequests.map(req => req.id === requestId ? { ...req, status: newStatus } : req)
+        );
+        setNewStatus('');
+    })
+    .catch(err => {
+        console.error("Error updating status:", err.response ? err.response.data : err.message);
+        setError("Er is een fout opgetreden bij het bijwerken van de status.");
+    });
+};
+  
 
-    axios.put(`http://localhost:3001/inschrijvingen/${inschrijvingId}`, { bezichtiging })
-        .then(response => {
-            // Update the local state with the updated inschrijving
-        })
-        .catch(err => {
-            console.error("Error planning bezichtiging:", err);
-            setError("Er is een fout opgetreden bij het plannen van de bezichtiging.");
-        });
+//   const planBezichtiging = (inschrijvingId) => {
+//     if (!selectedDate) {
+//         alert("Selecteer alstublieft een datum en tijd.");
+//         return;
+//     }
+
+//     const bezichtiging = moment(selectedDate).format('YYYY-MM-DD HH:mm:ss.SSSSSS');
+
+//     axios.put(`http://localhost:3001/inschrijvingen/${inschrijvingId}`, { bezichtiging }, {        
+//       headers: {
+//       "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+//       "Content-Type": "application/json"
+//     }})
+//         .then(response => {
+//             // Update the local state with the updated inschrijving
+//         })
+//         .catch(err => {
+//             console.error("Error planning bezichtiging:", err);
+//             setError("Er is een fout opgetreden bij het plannen van de bezichtiging.");
+//         });
+// };
+
+const planBezichtiging = (inschrijvingId) => {
+  if (!selectedDate) {
+      alert("Selecteer alstublieft een datum en tijd.");
+      console.log("Selected date is:", selectedDate);
+      return;
+  }
+
+  const bezichtiging = moment(selectedDate).format('YYYY-MM-DD HH:mm:ss');
+
+  console.log("Bezichtiging data:", { bezichtiging });
+
+  axios.post(`http://localhost:3001/inschrijvingen/${inschrijvingId}/bezichtiging`, { bezichtiging }, {        
+    headers: {
+        "api-key": "Jouw_API_Sleutel",
+        "Content-Type": "application/json"
+    }
+  })
+  .then(response => {
+      console.log("Bezichtiging succesvol gepland:", response.data);
+      // Hier kun je de UI bijwerken of de gebruiker een bevestiging geven
+      setSelectedDate(null); // Reset de geselecteerde datum
+      setShowCalendar(false); // Sluit de kalender
+  })
+  .catch(err => {
+      console.error("Error bij het plannen van de bezichtiging:", err);
+      setError("Er is een fout opgetreden bij het plannen van de bezichtiging.");
+  });
 };
 
   const pandInschrijvingenCount = panden.map((pand) => {
@@ -274,7 +318,7 @@ const InschrijvingenList = () => {
                     ) : (
                       <p>Pandinformatie niet beschikbaar</p>
                     )}
-                    <button onClick={() => setShowCalendar(true)}>Plan Bezichtiging</button>
+                    {/* <button onClick={() => setShowCalendar(true)}>Plan Bezichtiging</button>
                     {showCalendar && (
                       <div>
                         <DatePicker
@@ -289,7 +333,23 @@ const InschrijvingenList = () => {
                         <button onClick={() => planBezichtiging(inschrijving.id)}>Bevestig Bezichtiging</button>
                         <button onClick={() => setShowCalendar(false)}>Annuleer</button>
                       </div>
-                    )}
+                    )} */}
+                    <button onClick={() => setShowCalendar(true)}>Plan Bezichtiging</button>
+{showCalendar && (
+    <div>
+        <DatePicker
+ selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            showTimeSelect
+            dateFormat="Pp"
+            timeFormat="HH:mm"
+            timeIntervals={15}
+            placeholderText="Selecteer datum en tijd"
+        />
+        <button onClick={() => planBezichtiging(inschrijving.id)}>Bevestig Bezichtiging</button>
+        <button onClick={() => setShowCalendar(false)}>Annuleer</button>
+    </div>
+)}
                   </div>
                 );
               })
