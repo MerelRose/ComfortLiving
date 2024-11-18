@@ -20,12 +20,43 @@ const InschrijvingenList = () => {
   const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
-    const fetchInschrijvingen = axios.get('http://localhost:3001/inschrijvingen');
-    const fetchKlanten = axios.get('http://localhost:3001/klanten');
-    const fetchPanden = axios.get('http://localhost:3001/panden');
-    const fetchServiceverzoeken = axios.get('http://localhost:3001/serviceverzoek');
-    const fetchServicetypes = axios.get('http://localhost:3001/servicetype');
-    const fetchContracts = axios.get('http://localhost:3001/contracten');
+    const fetchInschrijvingen = axios.get('http://localhost:3001/inschrijvingen', {
+      headers: {
+        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+        "Content-Type": "application/json"
+      }
+    });
+    const fetchKlanten = axios.get('http://localhost:3001/klanten', {
+      headers: {
+        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+        "Content-Type": "application/json"
+      }
+    });
+    const fetchPanden = axios.get('http://localhost:3001/panden', {
+      headers: {
+        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+        "Content-Type": "application/json"
+      }
+    });
+    const fetchServiceverzoeken = axios.get('http://localhost:3001/serviceverzoek', {
+      headers: {
+        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+        "Content-Type": "application/json"
+      }
+    });
+    const fetchServicetypes = axios.get('http://localhost:3001/servicetype', {
+      headers: {
+        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+        "Content-Type": "application/json"
+      }
+    });
+    const fetchContracts = axios.get('http://localhost:3001/contracten', {
+      headers: {
+        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+        "Content-Type": "application/json"
+      }
+    });
+
 
     Promise.all([fetchInschrijvingen, fetchKlanten, fetchPanden, fetchServiceverzoeken, fetchServicetypes, fetchContracts])
       .then(([inschrijvingenRes, klantenRes, pandenRes, serviceverzoekenRes, servicetypesRes, contractsRes]) => {

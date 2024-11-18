@@ -15,7 +15,14 @@ const FilteredPandenList = () => {
   const placeholderImage = "https://via.placeholder.com/500x600?text=No+Image"; // Placeholder image URL
 
   useEffect(() => {
-    axios.get('http://localhost:3001/panden')
+    const apiUrl = 'http://localhost:3001/panden'; // Base URL for the API
+
+    axios.get(apiUrl, {
+      headers: {
+        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+        "Content-Type": "application/json"
+      }
+    })
       .then((response) => {
         setPanden(response.data);
 
@@ -28,7 +35,7 @@ const FilteredPandenList = () => {
         setFilteredPandenId0(filteredDataId0);
       })
       .catch((error) => {
-        setError(error.message);
+        setError(error.response ? error.response.data : error.message); // More detailed error handling
         console.error(error);
       });
   }, []);
@@ -49,26 +56,26 @@ const FilteredPandenList = () => {
     <div className='content'>
       {/* Spotlight section for panden with id === 0 */}
       <h1 className='pand-overview'>Spotlight:</h1>
-            <div className='scroll-container'>
-              {filteredPandenId0.slice(0, maxCardsToShow).map((pand) => (
-                <div key={pand.id} className='spotlight'>
-                  <img
-                    className='spotlight-foto'
-                    src={pand.foto}
-                    alt="Pand afbeelding"
-                    onError={handleImageError}
-                  />
-                  <div className='spotlight-info'>
-                    <p>{pand.straat} {pand.huisnummer}, {pand.plaats}</p>
-                    <p>{pand.postcode}</p>
-                    <p>{pand.type}</p>
-                    <p>Energielabel: {pand.energielabel}</p>
-                    <p>€ {pand.prijs}</p>
-                    <button className='nav-btn' onClick={() => handleDetailsClick(pand.id)}>Bekijk details</button>
-                  </div>
-                </div>
-              ))}
+      <div className='scroll-container'>
+        {filteredPandenId0.slice(0, maxCardsToShow).map((pand) => (
+          <div key={pand.id} className='spotlight'>
+            <img
+              className='spotlight-foto'
+              src={pand.foto}
+              alt="Pand afbeelding"
+              onError={handleImageError}
+            />
+            <div className='spotlight-info'>
+              <p>{pand.straat} {pand.huisnummer}, {pand.plaats}</p>
+              <p>{pand.postcode}</p>
+              <p>{pand.type}</p>
+              <p>Energielabel: {pand.energielabel}</p>
+              <p>€ {pand.prijs}</p>
+              <button className='nav-btn' onClick={() => handleDetailsClick(pand.id)}>Bekijk details</button>
             </div>
+          </div>
+        ))}
+      </div>
 
       {/* Section for panden with energielabel A */}
       <h1 className='pand-overview'>Onze beste panden (Energielabel A):</h1>
@@ -106,7 +113,7 @@ const FilteredPandenList = () => {
             <p>{pand.postcode}</p>
             <p>{pand.type}</p>
             <p>Energielabel: {pand.energielabel}</p>
-            <p>€ {pand.prijs}</p>
+            <p> € {pand.prijs}</p>
             <button className='nav-btn' onClick={() => handleDetailsClick(pand.id)}>Bekijk details</button>
           </div>
         ))}

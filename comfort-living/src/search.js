@@ -27,8 +27,15 @@ const PandenList = () => {
 
     const fetchData = async () => {             
             try{
-
-                let response = await  axios.get('http://localhost:3001/panden')
+                const apiUrl = 'http://localhost:3001/panden';
+                let response = await      
+                axios.get(apiUrl, {
+                    headers: {
+                      "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
+                      "Content-Type": "application/json"
+                    }
+                  })
+                
                 console.log("Panden fetched successfully:", response.data);
                  setPanden(response.data);
                  setOriginalPanden(response.data);

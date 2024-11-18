@@ -11,6 +11,7 @@ import MyAccount from './MyAccount';
 import WarningPopup from './WarningPopup';
 import Home from './Home';
 import Worker from './worker-dash';
+// import axiosInstance from '../axiosConfig';
 
 function Header({ setIsLoginOpen, setIsRegisterOpen }) {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
