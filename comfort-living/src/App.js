@@ -11,6 +11,7 @@ import MyAccount from './MyAccount';
 import WarningPopup from './WarningPopup';
 import Home from './Home';
 import Worker from './worker-dash';
+import Admin from './admin-dash';
 // import axiosInstance from '../axiosConfig';
 
 function Header({ setIsLoginOpen, setIsRegisterOpen }) {
@@ -90,6 +91,7 @@ function App() {
           <Route path="/woning/:id" element={<WoningDetail />} />
           <Route path="/detailpage" element={<WoningDetail />} />
           <Route path="/worker-dash" element={<Worker />} />
+          <Route path="/admin-dash" element={<Admin />} />
           </Routes>
       </div>
     </>
