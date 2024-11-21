@@ -1,10 +1,18 @@
 .pand-overview {
     font-size: 30px;
     font-weight: bold;
-    color: rgb(60,81,76);
+    color: rgb(60, 81, 76);
     font-family: 'High Tide', sans-serif;
     margin-bottom: 0;
     padding-left: 5px;
+}
+
+/* Adjust font size for smaller screens */
+@media (max-width: 768px) {
+    .pand-overview {
+        font-size: 24px;
+        text-align: center;
+    }
 }
 
 .scroll-container {
@@ -13,7 +21,15 @@
     padding: 30px;
     gap: 25px;
 }
-  
+
+/* Ensure scroll container adapts for mobile */
+@media (max-width: 768px) {
+    .scroll-container {
+        padding: 20px;
+        gap: 15px;
+    }
+}
+
 .spotlight {
     width: 800px;
     height: 300px;
@@ -27,11 +43,29 @@
     margin-bottom: 24px;
 }
 
-.spotlight-foto{
+/* Make spotlight adapt to smaller screens */
+@media (max-width: 1024px) {
+    .spotlight {
+        width: 100%;
+        height: auto;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+}
+
+.spotlight-foto {
     height: auto;
     width: 400px;
     border-radius: 15px;
     flex: 0 0 auto;
+}
+
+/* Adjust image size on smaller screens */
+@media (max-width: 768px) {
+    .spotlight-foto {
+        width: 100%;
+    }
 }
 
 .spotlight-info {
@@ -39,4 +73,12 @@
     float: right;
     position: relative;
     flex: 1;
+}
+
+/* Adjust info block on smaller screens */
+@media (max-width: 1024px) {
+    .spotlight-info {
+        width: 100%;
+        float: none;
+    }
 }

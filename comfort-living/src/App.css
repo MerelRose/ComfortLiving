@@ -100,6 +100,12 @@ h2 {
   position: relative;
 }
 
+.map {
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+  font-size: 18px;
+}
 
 
 /* Responsive adjustments */
