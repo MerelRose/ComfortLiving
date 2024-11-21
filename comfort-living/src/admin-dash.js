@@ -20,6 +20,7 @@ const AdminDashboard = () => {
     const [showContractenForm, setShowContractenForm] = useState(false);
     const [showExternePartijForm, setShowExternePartijForm] = useState(false);
     const [editExternePartij, setEditExternePartij] = useState(null);
+    const [editMedewerker, setEditMedewerker] = useState(null);
 
     const [newWorker, setNewWorker] = useState({
         voornaam: '',
@@ -144,13 +145,49 @@ const AdminDashboard = () => {
     const handleWorkerFormSubmit = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post('http://localhost:3001/medewerkers', newWorker, {
-          headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
-        });
-        setWorkers([...workers, response.data]);
-        setShowWorkerForm(false);
+          const { admin, ...workerData } = newWorker; // Exclude admin field
+          const response = await axios.post('http://localhost:3001/medewerkers', workerData, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
+          });
+          setWorkers([...workers, response.data]);
+          setShowWorkerForm(false);
       } catch (err) {
-        setWorkerError("Failed to create worker.");
+          setWorkerError("Failed to create worker.");
+      }
+  };
+
+    const handleEditMedewerkerClick = (worker) => {
+      const { admin, ...rest } = worker; // Exclude admin field
+      setEditMedewerker(rest);
+    };
+
+    const handleMedewerkerEditSubmit = async (e) => {
+      e.preventDefault();
+      try {
+          const { admin, ...updatedData } = editMedewerker; // Exclude admin field
+          const response = await axios.put(`http://localhost:3001/medewerkers/${updatedData.id}`, updatedData, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
+          });
+          setWorkers(
+              workers.map((medewerker) =>
+                  medewerker.id === updatedData.id ? response.data : medewerker
+              )
+          );
+          setEditMedewerker(null);
+      } catch (err) {
+          setWorkerError("Failed to update medewerker.");
+      }
+  };
+
+    const handleDeleteMedewerker = async (id) => {
+      try {
+          await axios.delete(`http://localhost:3001/medewerkers/${id}`, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
+          });
+          // Update the state to remove the deleted medewerker
+          setWorkers(workers.filter(worker => worker.id !== id));
+      } catch (err) {
+          setWorkerError("Failed to delete medewerker.");
       }
     };
   
@@ -219,6 +256,18 @@ const AdminDashboard = () => {
             setExternePartijenError("Failed to update externe partij.");
         }
     };
+
+    const handleDeleteExternePartij = async (id) => {
+      try {
+          await axios.delete(`http://localhost:3001/externepartij/${id}`, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
+          });
+          // Update the state to remove the deleted externe partij
+          setExternePartijen(externePartijen.filter(partij => partij.id !== id));
+      } catch (err) {
+          setExternePartijenError("Failed to delete externe partij.");
+      }
+  };
 
     return (
         <div className="content">
@@ -300,7 +349,8 @@ const AdminDashboard = () => {
                                 <td>{partij.email_contactpersoon}</td>
                                 <td>{partij.telefoonnummer_bedrijf}</td>
                                 <td>
-                                    <button onClick={() => setEditExternePartij(partij)}>Edit</button>
+                                  <button onClick={() => setEditExternePartij(partij)}>Edit</button>
+                                  <button onClick={() => handleDeleteExternePartij(partij.id)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -330,7 +380,31 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-  
+
+{editMedewerker && (
+    <div className="form-modal">
+        <div className="form-container">
+            <h2>Edit Medewerker</h2>
+            <form onSubmit={handleMedewerkerEditSubmit}>
+                {Object.keys(editMedewerker).map((key) => (
+                    key !== 'admin' && ( // Exclude admin field
+                        <input
+                            key={key}
+                            type={key === 'wachtwoord' ? 'password' : 'text'}
+                            name={key}
+                            placeholder={key}
+                            value={editMedewerker[key]}
+                            onChange={(e) => setEditMedewerker({ ...editMedewerker, [key]: e.target.value })}
+                            required={key !== 'tussenvoegsel' && key !== 'opmerkingen'}
+                        />
+                    )
+                ))}
+                <button type="submit">Save</button>
+                <button type="button" onClick={() => setEditMedewerker(null)}>Cancel</button>
+            </form>
+        </div>
+    </div>
+)}
         {/* Workers Table */}
         <h2>Workers</h2>
         {workers.length === 0 ? <p>No workers found.</p> : (
@@ -348,6 +422,10 @@ const AdminDashboard = () => {
                   <td>{worker.id}</td>
                   <td>{worker.voornaam}</td>
                   <td>{worker.email}</td>
+                  <td>
+                    <button onClick={() => setEditMedewerker(worker)}>Edit</button>
+                    <button onClick={() => handleDeleteMedewerker(worker.id)}>Delete</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
