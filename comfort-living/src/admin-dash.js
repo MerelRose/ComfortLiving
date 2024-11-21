@@ -21,6 +21,7 @@ const AdminDashboard = () => {
     const [showExternePartijForm, setShowExternePartijForm] = useState(false);
     const [editExternePartij, setEditExternePartij] = useState(null);
     const [editMedewerker, setEditMedewerker] = useState(null);
+    const [editPand, setEditPand] = useState(null);
 
     const [newWorker, setNewWorker] = useState({
         voornaam: '',
@@ -131,11 +132,44 @@ const AdminDashboard = () => {
       const { name, value } = e.target;
       setNewWorker({ ...newWorker, [name]: value });
     };
-  
+ //panden 
     const handlePandInputChange = (e) => {
       const { name, value } = e.target;
-      setNewPand({ ...newPand, [name]: value });
+      setEditPand({ ...editPand, [name]: value }); // Update the editPand state
     };
+
+    const handleEditPandClick = (pand) => {
+      setEditPand(pand); // Set the selected pand for editing
+    };
+  
+  const handlePandEditSubmit = async (e) => {
+      e.preventDefault();
+      try {
+          const response = await axios.put(`http://localhost:3001/panden/${editPand.id}`, editPand, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
+          });
+          setPanden(
+              panden.map((pand) =>
+                  pand.id === editPand.id ? response.data : pand
+              )
+          );
+          setEditPand(null); // Clear the edit state
+      } catch (err) {
+          setPandenError("Failed to update pand.");
+      }
+  };
+  
+  const handleDeletePand = async (id) => {
+      try {
+          await axios.delete(`http://localhost:3001/panden/${id}`, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
+          });
+          // Update the state to remove the deleted pand
+          setPanden(panden.filter(pand => pand.id !== id));
+      } catch (err) {
+          setPandenError("Failed to delete pand.");
+      }
+  };
   
     const handleContractInputChange = (e) => {
       const { name, value } = e.target;
@@ -455,29 +489,161 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-  
-        {/* Panden Table */}
-        <h2>Panden</h2>
-        {panden.length === 0 ? <p>No panden found.</p> : (
-          <table className="worker-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Postcode</th>
-                <th>Straat</th>
-              </tr>
-            </thead>
-            <tbody>
-              {panden.map((pand) => (
-                <tr key={pand.id}>
-                  <td>{pand.id}</td>
-                  <td>{pand.postcode}</td>
-                  <td>{pand.straat}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        {/* Edit Pand Form Modal */}
+        {editPand && (
+            <div className="form-modal">
+                <div className="form-container">
+                    <h2>Edit Pand</h2>
+                    <form onSubmit={handlePandEditSubmit}>
+                        <input
+                            type="text"
+                            name="straat"
+                            placeholder="Straat"
+                            value={editPand.straat}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="huisnummer"
+                            placeholder="Huisnummer"
+                            value={editPand.huisnummer}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="bij_voegsel"
+                            placeholder="Tussenvoegsel (optioneel)"
+                            value={editPand.bij_voegsel || ''}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="text"
+                            name="postcode"
+                            placeholder="Postcode"
+                            value={editPand.postcode}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="plaats"
+                            placeholder="Plaats"
+                            value={editPand.plaats}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="fotos"
+                            placeholder="Foto's (optioneel)"
+                            value={editPand.fotos || ''}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="number"
+                            name="prijs"
+                            placeholder="Prijs"
+                            value={editPand.prijs}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <textarea
+                            name="omschrijving"
+                            placeholder="Omschrijving"
+                            value={editPand.omschrijving}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            name="oppervlakte"
+                            placeholder="Oppervlakte in m²"
+                            value={editPand.oppervlakte}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="energielabel"
+                            placeholder="Energielabel"
+                            value={editPand.energielabel || ''}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="number"
+                            name="slaapkamers"
+                            placeholder="Aantal slaapkamers"
+                            value={editPand.slaapkamers}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="date"
+                            name="aangeboden_sinds"
+                            placeholder="Aangeboden sinds"
+                            value={editPand.aangeboden_sinds}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="type"
+                            placeholder="Type"
+                            value={editPand.type}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            name="latitude"
+                            placeholder="Latitude"
+                            value={editPand.latitude}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="number"
+                            name="longitude"
+                            placeholder="Longitude"
+                            value={editPand.longitude}
+                            onChange={handlePandInputChange}
+                        />
+                        <button type="submit">Save</button>
+                        <button type="button" onClick={() => setEditPand(null)}>Cancel</button>
+                    </form>
+                </div>
+            </div>
         )}
+  
+            {/* Panden Table */}
+            <h2>Panden</h2>
+            {panden.length === 0 ? <p>No panden found.</p> : (
+                <table className="worker-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Postcode</th>
+                            <th>Straat</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {panden.map((pand) => (
+                            <tr key={pand.id}>
+                                <td>{pand.id}</td>
+                                <td>{pand.postcode}</td>
+                                <td>{pand.straat}</td>
+                                <td>
+                                    <button onClick={() => handleEditPandClick(pand)}>Edit</button>
+                                    <button onClick={() => handleDeletePand(pand.id)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
   
         {/* Contracten Form Modal */}
         {showContractenForm && (
