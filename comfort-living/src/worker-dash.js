@@ -20,57 +20,30 @@ const InschrijvingenList = () => {
   const [showCalendar, setShowCalendar] = useState(false);
 
   useEffect(() => {
-    const fetchInschrijvingen = axios.get('http://localhost:3001/inschrijvingen', {
-      headers: {
-        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
-        "Content-Type": "application/json"
-      }
-    });
-    const fetchKlanten = axios.get('http://localhost:3001/klanten', {
-      headers: {
-        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
-        "Content-Type": "application/json"
-      }
-    });
-    const fetchPanden = axios.get('http://localhost:3001/panden', {
-      headers: {
-        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
-        "Content-Type": "application/json"
-      }
-    });
-    const fetchServiceverzoeken = axios.get('http://localhost:3001/serviceverzoek', {
-      headers: {
-        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
-        "Content-Type": "application/json"
-      }
-    });
-    const fetchServicetypes = axios.get('http://localhost:3001/servicetype', {
-      headers: {
-        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
-        "Content-Type": "application/json"
-      }
-    });
-    const fetchContracts = axios.get('http://localhost:3001/contracten', {
-      headers: {
-        "api-key": "AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6",
-        "Content-Type": "application/json"
-      }
-    });
-
-
-    Promise.all([fetchInschrijvingen, fetchKlanten, fetchPanden, fetchServiceverzoeken, fetchServicetypes, fetchContracts])
-      .then(([inschrijvingenRes, klantenRes, pandenRes, serviceverzoekenRes, servicetypesRes, contractsRes]) => {
+    const fetchData = async () => {
+      try {
+        const [inschrijvingenRes, klantenRes, pandenRes, serviceverzoekenRes, servicetypesRes, contractsRes] = await Promise.all([
+          axios.get('http://localhost:3001/inschrijvingen', { headers: { "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' } }),
+          axios.get('http://localhost:3001/klanten', { headers: { "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' } }),
+          axios.get('http://localhost:3001/panden', { headers: { "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' } }),
+          axios.get('http://localhost:3001/serviceverzoek', { headers: { "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' } }),
+          axios.get('http://localhost:3001/servicetype', { headers: { "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' } }),
+          axios.get('http://localhost:3001/contracten', { headers: { "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' } })
+        ]);
+        
         setInschrijvingen(inschrijvingenRes.data);
         setKlanten(klantenRes.data);
         setPanden(pandenRes.data);
         setServiceverzoeken(serviceverzoekenRes.data);
         setServicetypes(servicetypesRes.data);
         setContracts(contractsRes.data);
-      })
-      .catch((err) => {
+      } catch (err) {
         setError(err.message);
         console.error(err);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
   const getUserById = (userId) => klanten.find((klant) => klant.id === userId);
@@ -78,40 +51,52 @@ const InschrijvingenList = () => {
   const getServiceTypeById = (servicetypeId) => servicetypes.find((type) => type.id === servicetypeId);
   const getContractById = (contractId) => contracts.find((contract) => contract.id === contractId);
 
-  const updateServiceRequestStatus = (requestId) => {
-    console.log("Request ID:", requestId);
-    console.log("Nieuwe status:", newStatus);
-    axios.put(`http://localhost:3001/serviceverzoek/${requestId}`, { status: newStatus })
-      .then(response => {
-        console.log("Update succes:", response.data);
-        setServiceverzoeken(prevRequests => 
-          prevRequests.map(req => req.id === requestId ? { ...req, status: newStatus } : req)
-        );
-        setNewStatus('');
-      })
-      .catch(err => {
-        console.error("Error updating status:", err);
-        setError("Er is een fout opgetreden bij het bijwerken van de status.");
-      });
-  };
-  
+  const updateServiceRequestStatus = async (requestId) => {
+    if (!newStatus) {
+      console.error("Nieuwe status is niet gedefinieerd.");
+      return;
+    }
 
-  const planBezichtiging = (inschrijvingId) => {
+    try {
+      const response = await axios.put(`http://localhost:3001/serviceverzoek/${requestId}`, { status: newStatus }, {
+        headers: {
+          "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
+          "Content-Type": "application/json"
+        }
+      });
+      console.log("Update succesvol:", response.data);
+      setServiceverzoeken(prevRequests => 
+        prevRequests.map(req => req.id === requestId ? { ...req, status: newStatus } : req)
+      );
+      setNewStatus('');
+    } catch (err) {
+      console.error("Error updating status:", err.response ? err.response.data : err.message);
+      setError("Er is een fout opgetreden bij het bijwerken van de status.");
+    }
+  };
+
+  const planBezichtiging = async (inschrijvingId) => {
     if (!selectedDate) {
         alert("Selecteer alstublieft een datum en tijd.");
         return;
     }
 
-    const bezichtiging = moment(selectedDate).format('YYYY-MM-DD HH:mm:ss.SSSSSS');
+    const bezichtiging = moment(selectedDate).format('YYYY-MM-DD HH:mm:ss');
 
-    axios.put(`http://localhost:3001/inschrijvingen/${inschrijvingId}`, { bezichtiging })
-        .then(response => {
-            // Update the local state with the updated inschrijving
-        })
-        .catch(err => {
-            console.error("Error planning bezichtiging:", err);
-            setError("Er is een fout opgetreden bij het plannen van de bezichtiging.");
+    try {
+        const response = await axios.put(`http://localhost:3001/inschrijvingen/${inschrijvingId}`, { bezichtiging }, {        
+            headers: {
+                "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
+                "Content-Type": "application/json"
+            }
         });
+        console.log("Bezichtiging succesvol gepland:", response.data);
+        setSelectedDate(null);
+        setShowCalendar(false);
+    } catch (err) {
+        console.error("Error bij het plannen van de bezichtiging:", err);
+        setError("Er is een fout opgetreden bij het plannen van de bezichtiging.");
+    }
 };
 
   const pandInschrijvingenCount = panden.map((pand) => {
@@ -189,7 +174,7 @@ const InschrijvingenList = () => {
               <p className='centered-message'>Geen serviceverzoeken beschikbaar voor deze status.</p>
             ) : (
               filteredServiceverzoeken.map((req) => {
-                const servicetype = getServiceTypeById(req.servicetype_id);
+                const servicetype = getServiceTypeById(req .servicetype_id);
                 const contract = getContractById(req.contract_id);
                 const klant = contract ? getUserById(contract.klantid) : null;
                 const pand = contract ? getPandById(contract.pandid) : null;

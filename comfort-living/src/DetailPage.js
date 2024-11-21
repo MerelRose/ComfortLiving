@@ -19,7 +19,11 @@ const WoningDetail = () => {
     useEffect(() => {
         const fetchWoning = async () => {
             try {
-                const response = await fetch(`http://localhost:3001/panden/${id}`);
+                const response = await fetch(`http://localhost:3001/panden/${id}`, {             
+                    headers: {
+                    "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
+                    "Content-Type": "application/json"
+                }});
                 if (!response.ok) throw new Error('Woning niet gevonden');
                 const data = await response.json();
                 console.log('Woningdata succesvol opgehaald:', data);
@@ -52,7 +56,8 @@ const WoningDetail = () => {
             const response = await fetch('http://localhost:3001/inschrijvingen', {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
+                    "Content-Type": "application/json"
                 },
                 body: JSON.stringify({
                     userid: user.id,

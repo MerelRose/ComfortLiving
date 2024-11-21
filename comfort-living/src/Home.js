@@ -31,7 +31,7 @@ const FilteredPandenList = () => {
         setFilteredPandenA(filteredDataA);
 
         // Filter for id === 0
-        const filteredDataId0 = response.data.filter((pand) => pand.id === 0);
+        const filteredDataId0 = response.data.filter((pand) => pand.id === 2);
         setFilteredPandenId0(filteredDataId0);
       })
       .catch((error) => {
