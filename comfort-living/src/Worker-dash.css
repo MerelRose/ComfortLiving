@@ -1,29 +1,39 @@
 .inschrijvingen-content {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
-    display: flex;
+  padding: 20px;
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
+  gap: 20px;
 }
-  
+
+/* Responsive adjustments for inschrijvingen-content */
+@media (max-width: 768px) {
+  .inschrijvingen-content {
+      flex-direction: column; /* Stack content vertically on smaller screens */
+      gap: 15px;
+  }
+}
+
 .inschrijvingen-list {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
-  
+
 .inschrijving-card h2 {
-    margin-bottom: 10px;
+  margin-bottom: 10px;
 }
-  
+
 .inschrijving-card p {
-    margin: 5px 0;
-    font-size: 16px;
+  margin: 5px 0;
+  font-size: 16px;
 }
-  
+
 .inschrijving-card h3 {
-    margin-top: 15px;
-    font-size: 18px;
-    color: #333;
+  margin-top: 15px;
+  font-size: 18px;
+  color: #333;
 }
 
 .sidebar {
@@ -36,6 +46,16 @@
   padding: 5px;
   margin: 10px 0px 0px 0px;
   overflow-y: auto;
+}
+
+/* Responsive adjustments for sidebar */
+@media (max-width: 1024px) {
+  .sidebar {
+      position: static; /* Remove absolute positioning for smaller screens */
+      width: 90%;
+      height: auto;
+      margin: 10px auto;
+  }
 }
 
 .item {
@@ -63,6 +83,13 @@
   margin: 0 auto;
 }
 
+/* Responsive adjustments for cards */
+@media (max-width: 768px) {
+  .inschrijving-card, .serviceverzoek-card {
+      width: 90%;
+  }
+}
+
 .centered-message {
   text-align: center;
   color: #666;
@@ -77,4 +104,13 @@
   box-shadow: 2px 4px 8px #c5c5c5;
   transition: all 300ms;
   margin: 2px;
+}
+
+/* Responsive adjustments for options */
+@media (max-width: 768px) {
+  .options {
+      width: 100%;
+      height: 40px;
+      font-size: 14px;
+  }
 }
