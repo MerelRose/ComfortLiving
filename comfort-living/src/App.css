@@ -21,7 +21,7 @@ h2 {
   color: rgb(60,81,76);
   font-family: 'High Tide', sans-serif;
   margin-bottom: 0;
-  padding-left: 5px;
+  /* padding-left: 5px; */
 }
 
 .header-bg {
@@ -94,7 +94,18 @@ h2 {
   overflow-y: auto;
 }
 
+.svg {
+  padding: 0px 3px 0px 3px;
+  margin-top: 3px;
+  position: relative;
+}
 
+.map {
+  position: absolute;
+  bottom: 8px;
+  right: 16px;
+  font-size: 18px;
+}
 
 
 /* Responsive adjustments */
