@@ -32,8 +32,10 @@ function Header({ setIsLoginOpen, setIsRegisterOpen }) {
           {isLoggedIn ? (
             <>
               <button className="nav-btn" onClick={handleLogout}>Uitloggen</button>
-              <button className="nav-btn" onClick={() => navigate('/my-account')}>Mijn Account</button>
-              {user.isEmployee && ( // Voeg deze regel toe
+              {isLoggedIn && user && !user.isEmployee && (
+  <button className="nav-btn" onClick={() => navigate('/my-account')}>Mijn Account</button>
+)}
+              {user.isEmployee && ( 
                 <button className="nav-btn" onClick={() => navigate('/worker-dash')}>Worker Dashboard</button>
               )}
             </>
