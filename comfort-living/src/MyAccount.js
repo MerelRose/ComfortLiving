@@ -13,6 +13,15 @@ const formatDate = (dateString) => {
   return `${day}-${month}-${year}`;
 };
 
+const serviceTypeMapping = {
+  1: 'Onderhoud buiten',
+  2: 'Onderhoud riool/sanitair',
+  3: 'Onderhoud binnen',
+  4: 'Bezichtiging (eerste bezoek)',
+  5: 'Onderhoud Elektra',
+  6: 'Onderhoud beveiliging',
+};
+
 function MyAccount() {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
   const [isPopupOpen, setIsPopupOpen] = useState(false);
@@ -20,6 +29,7 @@ function MyAccount() {
   const [message, setMessage] = useState('');
   const [serviceRequests, setServiceRequests] = useState([]);
   const [inschrijvingen, setInschrijvingen] = useState([]);
+  const [pandDetails, setPandDetails] = useState({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -42,13 +52,10 @@ function MyAccount() {
         }
 
         const data = await response.json();
-        // Filter service requests by klantid
         const filteredRequests = data.filter(request => request.klantid === user.id);
         setServiceRequests(filteredRequests);
       } catch (error) {
         setError(error.message);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -70,9 +77,26 @@ function MyAccount() {
         }
 
         const data = await response.json();
-        // Filter inschrijvingen by userid
         const filteredInschrijvingen = data.filter(inschrijving => inschrijving.userid === user.id);
         setInschrijvingen(filteredInschrijvingen);
+
+        // Fetch pand details for each inschrijving
+        const pandPromises = filteredInschrijvingen.map(inschrijving => 
+          fetch(`http://localhost:3001/panden/${inschrijving.pandid}`, {
+            method: 'GET',
+            headers: {
+              "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
+              'Content-Type': 'application/json',
+            },
+          }).then(response => {
+            if (!response.ok) throw new Error('Fout bij het ophalen van pand');
+            return response.json();
+          }).then(pand => {
+            setPandDetails(prev => ({ ...prev, [inschrijving.pandid]: pand }));
+          })
+        );
+
+        await Promise.all(pandPromises);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -81,7 +105,7 @@ function MyAccount() {
     };
 
     if (isLoggedIn) {
-      setLoading(true);
+ setLoading(true);
       fetchServiceRequests();
       fetchInschrijvingen();
     }
@@ -110,7 +134,7 @@ function MyAccount() {
         setMessage(`Fout bij het wijzigen van wachtwoord: ${errorData.message}`);
       }
     } catch (error) {
-      setMessage(`Er is een fout opget reden: ${error.message}`);
+      setMessage(`Er is een fout opgetreden: ${error.message}`);
     }
   };
 
@@ -191,7 +215,7 @@ function MyAccount() {
         <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>
         <br />
 
-        <button className='nav-btn' onClick={() => setIsPopupOpen(true)}>Wachtwoord Wijzigen</button>
+        <button className='nav-btn' onClick ={() => setIsPopupOpen(true)}>Wachtwoord Wijzigen</button>
         <button className='nav-btn' onClick={handleDeleteAccount}>Account Verwijderen</button>
         <button className='nav-btn' onClick={handleResendEmail}>Verificatie e-mail opnieuw versturen</button>
         <button className='nav-btn' onClick={() => setIsServicePopupOpen(true)}>Indienen Serviceverzoek</button>
@@ -220,31 +244,29 @@ function MyAccount() {
       ) : (
         <table>
           <thead>
-              <tr>
-                {/* <th>ID</th> */}
-                <th>Omschrijving</th>
-                <th>Service Type ID</th>
-                <th>Datum Aanvraag</th>
-                <th>Datum Afhandeling</th>
-                <th>Status</th>
-                <th>Bezichtiging</th>
+            <tr>
+              <th>Omschrijving</th>
+              <th>Service Type</th>
+              <th>Datum Aanvraag</th>
+              <th>Datum Afhandeling</th>
+              <th>Status</th>
+              <th>Bezichtiging</th>
+            </tr>
+          </thead>
+          <tbody>
+            {serviceRequests.map(request => (
+              <tr key={request.id}>
+                <td>{request.omschrijving}</td>
+                <td>{serviceTypeMapping[request.servicetype_id] || 'Onbekend'}</td>
+                <td>{formatDate(request.datum_aanvraag)}</td>
+                <td>{formatDate(request.datum_afhandeling)}</td>
+                <td>{request.status}</td>
+                <td>{request.bezichtiging}</td>
               </tr>
-            </thead>
-            <tbody>
-              {serviceRequests.map(request => (
-                <tr key={request.id}>
-
-                  <td>{request.omschrijving}</td>
-                  <td>{request.servicetype_id}</td>
-                  <td>{formatDate(request.datum_aanvraag)}</td>
-                  <td>{formatDate(request.datum_afhandeling)}</td>
-                  <td>{request.status}</td>
-                  <td>{request.bezichtiging}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+            ))}
+          </tbody>
+        </table>
+      )}
 
       <h2>Mijn Inschrijvingen</h2>
       {loading ? (
@@ -255,24 +277,26 @@ function MyAccount() {
         <table>
           <thead>
             <tr>
-              <th>Pand ID</th>
-              <th>Aantal Personen</th>
+              <th>Adres</th>
+              <th>Aantal Pers.</th>
               <th>Datum</th>
               <th>Jaar Inkomen</th>
               <th>Bezichtiging</th>
             </tr>
           </thead>
           <tbody>
-            {inschrijvingen.map(inschrijving => (
-              <tr key={inschrijving.id}>
-
-                <td>{inschrijving.pandid}</td>
-                <td>{inschrijving.hoeveel_personen}</td>
-                <td>{formatDate(inschrijving.datum)}</td>
-                <td>{inschrijving.jaar_inkomen}</td>
-                <td>{inschrijving.bezichtiging}</td>
-              </tr>
-            ))}
+            {inschrijvingen.map(inschrijving => {
+              const pand = pandDetails[inschrijving.pandid];
+              return (
+                <tr key={inschrijving.id}>
+                  <td>{pand ? `${pand.straat} ${pand.huisnummer}` : 'Niet beschikbaar'}</td>
+                  <td>{inschrijving.hoeveel_personen}</td>
+                  <td>{formatDate(inschrijving.datum)}</td>
+                  <td>{inschrijving.jaar_inkomen}</td>
+                  <td>{inschrijving.bezichtiging}</td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       )}
