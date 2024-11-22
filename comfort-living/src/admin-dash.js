@@ -197,13 +197,13 @@ const AdminDashboard = () => {
   const handleMedewerkerEditSubmit = async (e) => {
     e.preventDefault();
     try {
-        const { id, geboortedatum, contract_verval_datum, ...updatedData } = editMedewerker; // Exclude ID from updated data
+        const { admin, geboortedatum, contract_verval_datum, ...updatedData } = editMedewerker; // Exclude admin field
 
-        // Format the dates correctly
-        const formattedGeboortedatum = new Date(geboortedatum).toISOString().split('T')[0]; // 'YYYY-MM-DD'
-        const formattedContractVervalDatum = new Date(contract_verval_datum).toISOString().split('T')[0]; // 'YYYY-MM-DD'
+        // Format dates to 'YYYY-MM-DD'
+        const formattedGeboortedatum = new Date(geboortedatum).toISOString().split('T')[0];
+        const formattedContractVervalDatum = new Date(contract_verval_datum).toISOString().split('T')[0];
 
-        const response = await axios.put(`http://localhost:3001/medewerkers/${id}`, {
+        const response = await axios.put(`http://localhost:3001/medewerkers/${updatedData.id}`, {
             ...updatedData,
             geboortedatum: formattedGeboortedatum,
             contract_verval_datum: formattedContractVervalDatum,
@@ -211,11 +211,14 @@ const AdminDashboard = () => {
             headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
         });
 
-        console.log("Response from server:", response.data); // Log the response for debugging
-        setWorkers(workers.map((medewerker) => (medewerker.id === id ? response.data : medewerker)));
-        setEditMedewerker(null); // Clear the edit state
+        setWorkers(
+            workers.map((medewerker) =>
+                medewerker.id === updatedData.id ? response.data : medewerker
+            )
+        );
+        setEditMedewerker(null);
     } catch (err) {
-        console.error(err); // Log the error
+        console.error(err);
         setWorkerError("Failed to update medewerker.");
     }
 };
