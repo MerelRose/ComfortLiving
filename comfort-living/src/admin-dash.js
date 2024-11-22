@@ -159,34 +159,33 @@ const handleEditPandClick = (pand) => {
   setEditPand(pand); // Set the selected pand for editing
 };
 
-  const handlePandFormSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      // Format the date for aangeboden_sinds only if it has a value
+const handlePandFormSubmit = async (e) => {
+  e.preventDefault();
+  try {
+      // Define formattedAangebodenSinds before using it
       const formattedAangebodenSinds = newPand.aangeboden_sinds
-        ? new Date(newPand.aangeboden_sinds).toISOString().slice(0, 19).replace('T', ' ')
-        : '';
-  
-      // Create a new object with the formatted date
+          ? new Date(newPand.aangeboden_sinds).toISOString().slice(0, 19).replace('T', ' ')
+          : '';
+
       const pandData = {
-        ...newPand,
-        aangeboden_sinds: formattedAangebodenSinds, // Use the formatted date
+          ...newPand,
+          aangeboden_sinds: formattedAangebodenSinds, // Include the formatted date
       };
-  
+
       const response = await axios.post('http://localhost:3001/panden', pandData, {
-        headers: { 
-            'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 
-            'Content-Type': 'application/json' 
-        },
+          headers: { 
+              'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 
+              'Content-Type': 'application/json' 
+          },
       });
-  
+
       setPanden([...panden, response.data]);
       setShowPandenForm(false);
-    } catch (err) {
-        console.error(err); // Log the error for debugging
-        setPandenError("Failed to create pand.");
-    }
-  };
+  } catch (err) {
+      console.error("Error creating pand:", err.response ? err.response.data : err.message);
+      setPandenError("Failed to create pand.");
+  }
+};
 
 const handlePandEditSubmit = async (e) => {
     e.preventDefault();
