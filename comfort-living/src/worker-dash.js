@@ -4,6 +4,7 @@ import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './Worker-dash.css';
+import './App.css';
 
 const InschrijvingenList = () => {
   const [inschrijvingen, setInschrijvingen] = useState([]);
@@ -127,7 +128,7 @@ const InschrijvingenList = () => {
     <div className='content'>
       <div className='main-container'>
         <div className='sidebar'>
-          <h2>Panden</h2>
+          <h2>Panden</h2><br></br>
           {pandInschrijvingenCount.map((pand) => (
             <div
               key={pand.id}
@@ -141,7 +142,7 @@ const InschrijvingenList = () => {
             </div>
           ))}
           <br />
-          <h2>Serviceverzoeken</h2>
+          <h2>Serviceverzoeken</h2><br></br>
           <div
             className={`item ${selectedStatus === 'afgehandeld' ? 'active' : ''}`}
             onClick={() => setSelectedStatus('afgehandeld')}
@@ -205,6 +206,7 @@ const InschrijvingenList = () => {
                       </>
                     )}
                     <select 
+                      className='options'
                       value={newStatus} 
                       onChange={(e) => {
                         console.log("Selected status:", e.target.value);
@@ -217,7 +219,7 @@ const InschrijvingenList = () => {
                       <option value="afgewezen">Afgewezen</option>
                       <option value="aangevraagd">Aangevraagd</option>
                     </select>
-                    <button onClick={() => updateServiceRequestStatus(req.id)}>Update Status</button>
+                    <button onClick={() => updateServiceRequestStatus(req.id)} className='worker-btn'>Update Status</button>
                   </div>
                 );
               })
@@ -259,10 +261,11 @@ const InschrijvingenList = () => {
                     ) : (
                       <p>Pandinformatie niet beschikbaar</p>
                     )}
-                    <button onClick={() => setShowCalendar(true)}>Plan Bezichtiging</button>
+                    <button onClick={() => setShowCalendar(true)} className='worker-btn'>Plan Bezichtiging</button>
                     {showCalendar && (
                       <div>
                         <DatePicker
+                          className='worker-input'
                           selected={selectedDate}
                           onChange={(date) => setSelectedDate(date)}
                           showTimeSelect
@@ -271,8 +274,8 @@ const InschrijvingenList = () => {
                           timeIntervals={15}
                           placeholderText="Selecteer datum en tijd"
                         />
-                        <button onClick={() => planBezichtiging(inschrijving.id)}>Bevestig Bezichtiging</button>
-                        <button onClick={() => setShowCalendar(false)}>Annuleer</button>
+                        <button onClick={() => planBezichtiging(inschrijving.id)} className='worker-btn'>Bevestig Bezichtiging</button>
+                        <button onClick={() => setShowCalendar(false)} className='worker-btn'>Annuleer</button>
                       </div>
                     )}
                   </div>

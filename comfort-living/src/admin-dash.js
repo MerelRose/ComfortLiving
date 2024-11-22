@@ -20,6 +20,8 @@ const AdminDashboard = () => {
     const [showContractenForm, setShowContractenForm] = useState(false);
     const [showExternePartijForm, setShowExternePartijForm] = useState(false);
     const [editExternePartij, setEditExternePartij] = useState(null);
+    const [editMedewerker, setEditMedewerker] = useState(null);
+    const [editPand, setEditPand] = useState(null);
 
     const [newWorker, setNewWorker] = useState({
         voornaam: '',
@@ -130,11 +132,44 @@ const AdminDashboard = () => {
       const { name, value } = e.target;
       setNewWorker({ ...newWorker, [name]: value });
     };
-  
+ //panden 
     const handlePandInputChange = (e) => {
       const { name, value } = e.target;
-      setNewPand({ ...newPand, [name]: value });
+      setEditPand({ ...editPand, [name]: value }); // Update the editPand state
     };
+
+    const handleEditPandClick = (pand) => {
+      setEditPand(pand); // Set the selected pand for editing
+    };
+  
+  const handlePandEditSubmit = async (e) => {
+      e.preventDefault();
+      try {
+          const response = await axios.put(`http://localhost:3001/panden/${editPand.id}`, editPand, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
+          });
+          setPanden(
+              panden.map((pand) =>
+                  pand.id === editPand.id ? response.data : pand
+              )
+          );
+          setEditPand(null); // Clear the edit state
+      } catch (err) {
+          setPandenError("Failed to update pand.");
+      }
+  };
+  
+  const handleDeletePand = async (id) => {
+      try {
+          await axios.delete(`http://localhost:3001/panden/${id}`, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
+          });
+          // Update the state to remove the deleted pand
+          setPanden(panden.filter(pand => pand.id !== id));
+      } catch (err) {
+          setPandenError("Failed to delete pand.");
+      }
+  };
   
     const handleContractInputChange = (e) => {
       const { name, value } = e.target;
@@ -144,28 +179,87 @@ const AdminDashboard = () => {
     const handleWorkerFormSubmit = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post('http://localhost:3001/medewerkers', newWorker, {
-          headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
-        });
-        setWorkers([...workers, response.data]);
-        setShowWorkerForm(false);
+          const { admin, ...workerData } = newWorker; // Exclude admin field
+          const response = await axios.post('http://localhost:3001/medewerkers', workerData, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
+          });
+          setWorkers([...workers, response.data]);
+          setShowWorkerForm(false);
       } catch (err) {
-        setWorkerError("Failed to create worker.");
+          setWorkerError("Failed to create worker.");
       }
-    };
+  };
+
+  const handleEditMedewerkerClick = (worker) => {
+    setEditMedewerker(worker);
+  };
+
+  const handleMedewerkerEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const { admin, geboortedatum, contract_verval_datum, ...updatedData } = editMedewerker; // Exclude admin field
+
+        // Format dates to 'YYYY-MM-DD'
+        const formattedGeboortedatum = new Date(geboortedatum).toISOString().split('T')[0];
+        const formattedContractVervalDatum = new Date(contract_verval_datum).toISOString().split('T')[0];
+
+        const response = await axios.put(`http://localhost:3001/medewerkers/${updatedData.id}`, {
+            ...updatedData,
+            geboortedatum: formattedGeboortedatum,
+            contract_verval_datum: formattedContractVervalDatum,
+        }, {
+            headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
+        });
+
+        setWorkers(
+            workers.map((medewerker) =>
+                medewerker.id === updatedData.id ? response.data : medewerker
+            )
+        );
+        setEditMedewerker(null);
+    } catch (err) {
+        console.error(err);
+        setWorkerError("Failed to update medewerker.");
+    }
+};
+
+    const handleDeleteMedewerker = async (id) => {
+        try {
+            await axios.delete(`http://localhost:3001/medewerkers/${id}`, {
+                headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
+            });
+            setWorkers(workers.filter(worker => worker.id !== id));
+        } catch (err) {
+            setWorkerError("Failed to delete medewerker.");
+        }
+    }
   
     const handlePandFormSubmit = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post('http://localhost:3001/panden', newPand, {
-          headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
-        });
-        setPanden([...panden, response.data]);
-        setShowPandenForm(false);
+          // Format the date for aangeboden_sinds
+          const formattedAangebodenSinds = new Date(newPand.aangeboden_sinds).toISOString().split('T')[0];
+  
+          // Create a new object with the formatted date
+          const pandData = {
+              ...newPand,
+              aangeboden_sinds: formattedAangebodenSinds, // Use the formatted date
+          };
+  
+          const response = await axios.post('http://localhost:3001/panden', pandData, {
+              headers: { 
+                  'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 
+                  'Content-Type': 'application/json' 
+              },
+          });
+  
+          setPanden([...panden, response.data]);
+          setShowPandenForm(false);
       } catch (err) {
-        setPandenError("Failed to create pand.");
+          console.error(err); // Log the error for debugging
+          setPandenError("Failed to create pand.");
       }
-    };
+  };
   
     const handleContractFormSubmit = async (e) => {
       e.preventDefault();
@@ -219,6 +313,18 @@ const AdminDashboard = () => {
             setExternePartijenError("Failed to update externe partij.");
         }
     };
+
+    const handleDeleteExternePartij = async (id) => {
+      try {
+          await axios.delete(`http://localhost:3001/externepartij/${id}`, {
+              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
+          });
+          // Update the state to remove the deleted externe partij
+          setExternePartijen(externePartijen.filter(partij => partij.id !== id));
+      } catch (err) {
+          setExternePartijenError("Failed to delete externe partij.");
+      }
+  };
 
     return (
         <div className="content">
@@ -300,7 +406,8 @@ const AdminDashboard = () => {
                                 <td>{partij.email_contactpersoon}</td>
                                 <td>{partij.telefoonnummer_bedrijf}</td>
                                 <td>
-                                    <button onClick={() => setEditExternePartij(partij)}>Edit</button>
+                                  <button onClick={() => setEditExternePartij(partij)}>Edit</button>
+                                  <button onClick={() => handleDeleteExternePartij(partij.id)}>Delete</button>
                                 </td>
                             </tr>
                         ))}
@@ -330,7 +437,31 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-  
+
+{editMedewerker && (
+    <div className="form-modal">
+        <div className="form-container">
+            <h2>Edit Medewerker</h2>
+            <form onSubmit={handleMedewerkerEditSubmit}>
+                {Object.keys(editMedewerker).map((key) => (
+                    key !== 'admin' && ( // Exclude admin field
+                        <input
+                            key={key}
+                            type={key === 'wachtwoord' ? 'password' : 'text'}
+                            name={key}
+                            placeholder={key}
+                            value={editMedewerker[key]}
+                            onChange={(e) => setEditMedewerker({ ...editMedewerker, [key]: e.target.value })}
+                            required={key !== 'tussenvoegsel' && key !== 'opmerkingen'}
+                        />
+                    )
+                ))}
+                <button type="submit">Save</button>
+                <button type="button" onClick={() => setEditMedewerker(null)}>Cancel</button>
+            </form>
+        </div>
+    </div>
+)}
         {/* Workers Table */}
         <h2>Workers</h2>
         {workers.length === 0 ? <p>No workers found.</p> : (
@@ -348,6 +479,10 @@ const AdminDashboard = () => {
                   <td>{worker.id}</td>
                   <td>{worker.voornaam}</td>
                   <td>{worker.email}</td>
+                  <td>
+                    <button onClick={() => setEditMedewerker(worker)}>Edit</button>
+                    <button onClick={() => handleDeleteMedewerker(worker.id)}>Delete</button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -377,29 +512,160 @@ const AdminDashboard = () => {
             </div>
           </div>
         )}
-  
-        {/* Panden Table */}
-        <h2>Panden</h2>
-        {panden.length === 0 ? <p>No panden found.</p> : (
-          <table className="worker-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Postcode</th>
-                <th>Straat</th>
-              </tr>
-            </thead>
-            <tbody>
-              {panden.map((pand) => (
-                <tr key={pand.id}>
-                  <td>{pand.id}</td>
-                  <td>{pand.postcode}</td>
-                  <td>{pand.straat}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+
+        {/* Edit Pand Form Modal */}
+        {editPand && (
+            <div className="form-modal">
+                <div className="form-container">
+                    <h2>Edit Pand</h2>
+                    <form onSubmit={handlePandEditSubmit}>
+                        <input
+                            type="text"
+                            name="straat"
+                            placeholder="Straat"
+                            value={editPand.straat}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="huisnummer"
+                            placeholder="Huisnummer"
+                            value={editPand.huisnummer}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="bij_voegsel"
+                            placeholder="Tussenvoegsel (optioneel)"
+                            value={editPand.bij_voegsel || ''}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="text"
+                            name="postcode"
+                            placeholder="Postcode"
+                            value={editPand.postcode}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="plaats"
+                            placeholder="Plaats"
+                            value={editPand.plaats}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="fotos"
+                            placeholder="Foto's (optioneel)"
+                            value={editPand.fotos || ''}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="number"
+                            name="prijs"
+                            placeholder="Prijs"
+                            value={editPand.prijs}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <textarea
+                            name="omschrijving"
+                            placeholder="Omschrijving"
+                            value={editPand.omschrijving}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            name="oppervlakte"
+                            placeholder="Oppervlakte in m²"
+                            value={editPand.oppervlakte}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="energielabel"
+                            placeholder="Energielabel"
+                            value={editPand.energielabel || ''}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="number"
+                            name="slaapkamers"
+                            placeholder="Aantal slaapkamers"
+                            value={editPand.slaapkamers}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="date"
+                            name="aangeboden_sinds"
+                            value={newPand.aangeboden_sinds}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="text"
+                            name="type"
+                            placeholder="Type"
+                            value={editPand.type}
+                            onChange={handlePandInputChange}
+                            required
+                        />
+                        <input
+                            type="number"
+                            name="latitude"
+                            placeholder="Latitude"
+                            value={editPand.latitude}
+                            onChange={handlePandInputChange}
+                        />
+                        <input
+                            type="number"
+                            name="longitude"
+                            placeholder="Longitude"
+                            value={editPand.longitude}
+                            onChange={handlePandInputChange}
+                        />
+                        <button type="submit">Save</button>
+                        <button type="button" onClick={() => setEditPand(null)}>Cancel</button>
+                    </form>
+                </div>
+            </div>
         )}
+  
+            {/* Panden Table */}
+            <h2>Panden</h2>
+            {panden.length === 0 ? <p>No panden found.</p> : (
+                <table className="worker-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Postcode</th>
+                            <th>Straat</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {panden.map((pand) => (
+                            <tr key={pand.id}>
+                                <td>{pand.id}</td>
+                                <td>{pand.postcode}</td>
+                                <td>{pand.straat}</td>
+                                <td>
+                                    <button onClick={() => handleEditPandClick(pand)}>Edit</button>
+                                    <button onClick={() => handleDeletePand(pand.id)}>Delete</button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            )}
   
         {/* Contracten Form Modal */}
         {showContractenForm && (

@@ -94,17 +94,25 @@ h2 {
   overflow-y: auto;
 }
 
-.svg {
-  padding: 0px 3px 0px 3px;
-  margin-top: 3px;
-  position: relative;
+.worker-btn {
+  border-radius: 20px;
+  width: fit-content;
+  padding: 5px 10px;
+  background-color: rgb(60,81,76, 0.5);
+  color: white;
+  font-weight: bold;
+  margin: 3px;
 }
 
-.map {
-  position: absolute;
-  bottom: 8px;
-  right: 16px;
-  font-size: 18px;
+.worker-btn:hover {
+  transform: scale(1.05) rotate(-1deg);
+  box-shadow: rgba(130, 182, 150, 0.2) 0 -25px 18px -14px inset, rgba(49, 63, 54, 0.15) 0 1px 2px, rgba(175, 243, 201, 0.15) 0 2px 4px, rgba(54, 77, 63, 0.15) 0 4px 8px, rgba(92, 255, 155, 0.15) 0 8px 16px, rgba(44, 187, 99, 0.15) 0 16px 32px;
+}
+
+.worker-input {
+  width: 95%;
+  border-radius: 10px;
+  height: 20px;
 }
 
 
