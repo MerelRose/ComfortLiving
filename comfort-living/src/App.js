@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from 'react';
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { BrowserRouter, Route, Routes, useLocation, useNavigate, Navigate } from 'react-router-dom';
 import { AuthContext, AuthProvider } from './AuthContext';
 import logo from './logo.png';
 import WoningDetail from './DetailPage';
@@ -12,7 +12,6 @@ import WarningPopup from './WarningPopup';
 import Home from './Home';
 import Worker from './worker-dash';
 import Admin from './admin-dash';
-// import axiosInstance from '../axiosConfig';
 
 function Header({ setIsLoginOpen, setIsRegisterOpen }) {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
@@ -33,10 +32,14 @@ function Header({ setIsLoginOpen, setIsRegisterOpen }) {
             <>
               <button className="nav-btn" onClick={handleLogout}>Uitloggen</button>
               {isLoggedIn && user && !user.isEmployee && (
-  <button className="nav-btn" onClick={() => navigate('/my-account')}>Mijn Account</button>
-)}
+                <button className="nav-btn" onClick={() => navigate('/my-account')}>Mijn Account</button>
+              )}
               {user.isEmployee && ( 
                 <button className="nav-btn" onClick={() => navigate('/worker-dash')}>Worker Dashboard</button>
+              )}       
+
+                            {user.admin && ( 
+                <button className="nav-btn" onClick={() => navigate('/admin-dash')}>admin Dashboard</button>
               )}
             </>
           ) : (
@@ -72,8 +75,8 @@ function App() {
   }, [isLoggedIn, user]);
   
   useEffect(() => {
-    const storedUser = sessionStorage.getItem('user');
-    if (storedUser && !isLoggedIn && location.pathname === '/') {
+    const storedUser  = sessionStorage.getItem('user');
+    if (storedUser  && !isLoggedIn && location.pathname === '/') {
       navigate('/');
     }
   }, [isLoggedIn, location.pathname, navigate]);
@@ -91,9 +94,10 @@ function App() {
           <Route path="/my-account" element={<MyAccount />} />
           <Route path="/woning/:id" element={<WoningDetail />} />
           <Route path="/detailpage" element={<WoningDetail />} />
-          <Route path="/worker-dash" element={<Worker />} />
-          <Route path="/admin-dash" element={<Admin />} />
-          </Routes>
+          <Route path="/worker-dash" element={user?.isEmployee ? <Worker /> : <Navigate to="/" />} />
+          <Route path="/admin-dash" element={user?.admin === 1 ? <Admin /> : <Navigate to="/" />} />
+
+        </Routes>
       </div>
     </>
   );
