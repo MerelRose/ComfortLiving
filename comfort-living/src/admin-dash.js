@@ -237,15 +237,29 @@ const AdminDashboard = () => {
     const handlePandFormSubmit = async (e) => {
       e.preventDefault();
       try {
-        const response = await axios.post('http://localhost:3001/panden', newPand, {
-          headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
-        });
-        setPanden([...panden, response.data]);
-        setShowPandenForm(false);
+          // Format the date for aangeboden_sinds
+          const formattedAangebodenSinds = new Date(newPand.aangeboden_sinds).toISOString().split('T')[0];
+  
+          // Create a new object with the formatted date
+          const pandData = {
+              ...newPand,
+              aangeboden_sinds: formattedAangebodenSinds, // Use the formatted date
+          };
+  
+          const response = await axios.post('http://localhost:3001/panden', pandData, {
+              headers: { 
+                  'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 
+                  'Content-Type': 'application/json' 
+              },
+          });
+  
+          setPanden([...panden, response.data]);
+          setShowPandenForm(false);
       } catch (err) {
-        setPandenError("Failed to create pand.");
+          console.error(err); // Log the error for debugging
+          setPandenError("Failed to create pand.");
       }
-    };
+  };
   
     const handleContractFormSubmit = async (e) => {
       e.preventDefault();
@@ -592,8 +606,7 @@ const AdminDashboard = () => {
                         <input
                             type="date"
                             name="aangeboden_sinds"
-                            placeholder="Aangeboden sinds"
-                            value={editPand.aangeboden_sinds}
+                            value={newPand.aangeboden_sinds}
                             onChange={handlePandInputChange}
                             required
                         />

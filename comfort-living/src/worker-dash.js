@@ -128,7 +128,7 @@ const InschrijvingenList = () => {
     <div className='content'>
       <div className='main-container'>
         <div className='sidebar'>
-          <h2>Panden</h2>
+          <h2>Panden</h2><br></br>
           {pandInschrijvingenCount.map((pand) => (
             <div
               key={pand.id}
@@ -142,7 +142,7 @@ const InschrijvingenList = () => {
             </div>
           ))}
           <br />
-          <h2>Serviceverzoeken</h2>
+          <h2>Serviceverzoeken</h2><br></br>
           <div
             className={`item ${selectedStatus === 'afgehandeld' ? 'active' : ''}`}
             onClick={() => setSelectedStatus('afgehandeld')}

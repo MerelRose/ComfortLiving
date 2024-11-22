@@ -137,7 +137,7 @@ const WoningDetail = () => {
             <div>
                 <div className='pandfoto'>
                 <img
-                    src={woning.foto}
+                    src={woning.fotos}
                     alt="Pand afbeelding"
                     onError={handleImageError}
                 />

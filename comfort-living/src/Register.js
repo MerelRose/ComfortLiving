@@ -40,7 +40,7 @@ function RegisterForm({ isOpen, togglePopup }) {
       }
   
       const data = JSON.parse(responseBody);
-      setMessage('Registratie succesvol! Welkom ' + data.klant.voornaam);
+      setMessage('Registratie succesvol! Welkom, ' + data.klant.voornaam + 'Controleer je e-mail om je account te verifiëren. ');
       setSuccessMessage('Je account is succesvol aangemaakt.'); // Set success message
       console.log('Succesvolle registratie:', data);
   
