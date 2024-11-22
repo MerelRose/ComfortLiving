@@ -190,40 +190,46 @@ const AdminDashboard = () => {
       }
   };
 
-    const handleEditMedewerkerClick = (worker) => {
-      const { admin, ...rest } = worker; // Exclude admin field
-      setEditMedewerker(rest);
-    };
-
-    const handleMedewerkerEditSubmit = async (e) => {
-      e.preventDefault();
-      try {
-          const { admin, ...updatedData } = editMedewerker; // Exclude admin field
-          const response = await axios.put(`http://localhost:3001/medewerkers/${updatedData.id}`, updatedData, {
-              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
-          });
-          setWorkers(
-              workers.map((medewerker) =>
-                  medewerker.id === updatedData.id ? response.data : medewerker
-              )
-          );
-          setEditMedewerker(null);
-      } catch (err) {
-          setWorkerError("Failed to update medewerker.");
-      }
+  const handleEditMedewerkerClick = (worker) => {
+    setEditMedewerker(worker);
   };
 
+  const handleMedewerkerEditSubmit = async (e) => {
+    e.preventDefault();
+    try {
+        const { id, geboortedatum, contract_verval_datum, ...updatedData } = editMedewerker; // Exclude ID from updated data
+
+        // Format the dates correctly
+        const formattedGeboortedatum = new Date(geboortedatum).toISOString().split('T')[0]; // 'YYYY-MM-DD'
+        const formattedContractVervalDatum = new Date(contract_verval_datum).toISOString().split('T')[0]; // 'YYYY-MM-DD'
+
+        const response = await axios.put(`http://localhost:3001/medewerkers/${id}`, {
+            ...updatedData,
+            geboortedatum: formattedGeboortedatum,
+            contract_verval_datum: formattedContractVervalDatum,
+        }, {
+            headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', 'Content-Type': 'application/json' },
+        });
+
+        console.log("Response from server:", response.data); // Log the response for debugging
+        setWorkers(workers.map((medewerker) => (medewerker.id === id ? response.data : medewerker)));
+        setEditMedewerker(null); // Clear the edit state
+    } catch (err) {
+        console.error(err); // Log the error
+        setWorkerError("Failed to update medewerker.");
+    }
+};
+
     const handleDeleteMedewerker = async (id) => {
-      try {
-          await axios.delete(`http://localhost:3001/medewerkers/${id}`, {
-              headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
-          });
-          // Update the state to remove the deleted medewerker
-          setWorkers(workers.filter(worker => worker.id !== id));
-      } catch (err) {
-          setWorkerError("Failed to delete medewerker.");
-      }
-    };
+        try {
+            await axios.delete(`http://localhost:3001/medewerkers/${id}`, {
+                headers: { 'api-key': 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6' },
+            });
+            setWorkers(workers.filter(worker => worker.id !== id));
+        } catch (err) {
+            setWorkerError("Failed to delete medewerker.");
+        }
+    }
   
     const handlePandFormSubmit = async (e) => {
       e.preventDefault();
