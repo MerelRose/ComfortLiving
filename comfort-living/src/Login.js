@@ -13,7 +13,7 @@ function LoginForm({ isOpen, togglePopup }) {
     setErrorMessage('');
     setSuccessMessage('');
 
-    const employeeEndpoint = 'http://localhost:3001/medewerkers/login';
+    const employeeEndpoint = 'http://localhost:3001/medewerker/login';
     const customerEndpoint = 'http://localhost:3001/klanten/login';
     
     try {
