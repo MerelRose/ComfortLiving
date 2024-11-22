@@ -142,14 +142,22 @@ const AdminDashboard = () => {
       setNewWorker({ ...newWorker, [name]: value });
     };
  //panden 
-    const handlePandInputChange = (e) => {
-      const { name, value } = e.target;
-      setEditPand({ ...editPand, [name]: value }); // Update the editPand state
-    };
+// Function to handle input changes for the new Pand
+const handleNewPandInputChange = (e) => {
+  const { name, value } = e.target;
+  setNewPand({ ...newPand, [name]: value }); // Update the newPand state
+};
 
-    const handleEditPandClick = (pand) => {
-      setEditPand(pand); // Set the selected pand for editing
-  };
+// Function to handle input changes for the editing Pand
+const handlePandInputChange = (e) => {
+  const { name, value } = e.target;
+  setEditPand({ ...editPand, [name]: value }); // Update the editPand state
+};
+
+// Function to set the selected Pand for editing
+const handleEditPandClick = (pand) => {
+  setEditPand(pand); // Set the selected pand for editing
+};
 
   const handlePandFormSubmit = async (e) => {
     e.preventDefault();
@@ -517,8 +525,8 @@ const handlePandEditSubmit = async (e) => {
                     name={key}
                     placeholder={key}
                     value={newPand[key]}
-                    onChange={handlePandInputChange}
-                    required={key !== 'bij_voegsel'}
+                    onChange={handleNewPandInputChange}
+                    required
                   />
                 ))}
                 <button type="submit">Submit</button>
