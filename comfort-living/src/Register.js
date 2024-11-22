@@ -27,6 +27,7 @@ function RegisterForm({ isOpen, togglePopup }) {
       const response = await fetch('http://localhost:3001/klanten', {
         method: 'POST',
         headers: {
+          "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
@@ -36,23 +37,31 @@ function RegisterForm({ isOpen, togglePopup }) {
       console.log('Response body:', responseBody);
   
       if (!response.ok) {
-        throw new Error('Er is een probleem opgetreden bij het registreren: ' + responseBody);
+        // Use the server's error message
+        throw new Error(responseBody);
       }
   
       const data = JSON.parse(responseBody);
-      setMessage('Registratie succesvol! Welkom ' + data.klant.voornaam);
-      setSuccessMessage('Je account is succesvol aangemaakt.'); // Set success message
-      console.log('Succesvolle registratie:', data);
+      
+      // Check if the message property exists
+      if (!data) {
+        throw new Error("Registratie mislukt. Geen gegevens ontvangen.");
+      }
   
+      // Set success messages
+      setMessage('Registratie succesvol! Welkom ' + data.voornaam);
+      setSuccessMessage('Je account is succesvol aangemaakt. Verifieer je e-mailadres om in te loggen.');
+  
+      // Create user info object from the response
       const userInfo = {
-        voornaam: data.klant.voornaam || 'Niet beschikbaar',
-        tussenvoegsel: data.klant.tussenvoegsel || 'Niet beschikbaar',
-        achternaam: data.klant.achternaam || 'Niet beschikbaar',
-        email: data.klant.email,
-        telefoonnummer: data.klant.telefoonnummer || 'Niet beschikbaar',
-        huidig_woonadres: data.klant.huidig_woonadres || 'Niet beschikbaar',
-        geslacht: data.klant.geslacht || 'Niet beschikbaar',
-        geboortedatum: data.klant.geboortedatum || 'Niet beschikbaar',
+        voornaam: data.voornaam || 'Niet beschikbaar',
+        tussenvoegsel: data.tussenvoegsel || 'Niet beschikbaar',
+        achternaam: data.achternaam || 'Niet beschikbaar',
+        email: data.email,
+        telefoonnummer: data.telefoonnummer || 'Niet beschikbaar',
+        huidig_woonadres: data.huidig_woonadres || 'Niet beschikbaar',
+        geslacht: data.geslacht || 'Niet beschikbaar',
+        geboortedatum: data.geboortedatum || 'Niet beschikbaar',
         isLoggedIn: true,
       };
   
@@ -63,12 +72,17 @@ function RegisterForm({ isOpen, togglePopup }) {
       setTimeout(() => {
         togglePopup(); // Close the popup
       }, 2000); // Delay of 2 seconds
-
+  
     } catch (error) {
       console.error('Fout bij registratie:', error);
-      setMessage('Er is iets misgegaan tijdens de registratie.');
+      // Use the server's error message
+      setMessage(error.message); // Show the error message in the form
     }
   };
+
+
+
+  
 
   const handleSubmit = (event) => {
     event.preventDefault();
