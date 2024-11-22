@@ -19,18 +19,20 @@ function MyAccount() {
   const [isServicePopupOpen, setIsServicePopupOpen] = useState(false);
   const [message, setMessage] = useState('');
   const [serviceRequests, setServiceRequests] = useState([]);
+  const [inschrijvingen, setInschrijvingen] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchServiceRequests = async () => {
-      if (!user || !user.id) return; // Prevent fetching if user is null
+      if (!user || !user.id) return;
 
       console.log('Fetching service requests for klantid:', user.id);
       try {
-        const response = await fetch(`http://localhost:3001/serviceverzoek?klantenid=${user.id}`, {
+        const response = await fetch(`http://localhost:3001/serviceverzoek?klantid=${user.id}`, {
           method: 'GET',
           headers: {
+            "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
             'Content-Type': 'application/json',
           },
         });
@@ -40,7 +42,37 @@ function MyAccount() {
         }
 
         const data = await response.json();
-        setServiceRequests(data);
+        // Filter service requests by klantid
+        const filteredRequests = data.filter(request => request.klantid === user.id);
+        setServiceRequests(filteredRequests);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    const fetchInschrijvingen = async () => {
+      if (!user || !user.id) return;
+
+      console.log('Fetching inschrijvingen for userid:', user.id);
+      try {
+        const response = await fetch(`http://localhost:3001/inschrijvingen?userid=${user.id}`, {
+          method: 'GET',
+          headers: {
+            "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Fout bij het ophalen van inschrijvingen');
+        }
+
+        const data = await response.json();
+        // Filter inschrijvingen by userid
+        const filteredInschrijvingen = data.filter(inschrijving => inschrijving.userid === user.id);
+        setInschrijvingen(filteredInschrijvingen);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -49,15 +81,18 @@ function MyAccount() {
     };
 
     if (isLoggedIn) {
+      setLoading(true);
       fetchServiceRequests();
+      fetchInschrijvingen();
     }
-  }, [isLoggedIn, user]); // Add user to dependencies
+  }, [isLoggedIn, user]);
 
   const handleChangePassword = async (oldPassword, newPassword) => {
     try {
       const response = await fetch(`http://localhost:3001/klanten/${user.id}/wachtwoord`, {
         method: 'PUT',
         headers: {
+          "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -71,11 +106,11 @@ function MyAccount() {
         setMessage('Wachtwoord succesvol gewijzigd.');
         setIsPopupOpen(false);
       } else {
- const errorData = await response.json();
+        const errorData = await response.json();
         setMessage(`Fout bij het wijzigen van wachtwoord: ${errorData.message}`);
       }
     } catch (error) {
-      setMessage(`Er is een fout opgetreden: ${error.message}`);
+      setMessage(`Er is een fout opget reden: ${error.message}`);
     }
   };
 
@@ -84,6 +119,10 @@ function MyAccount() {
       try {
         const response = await fetch(`http://localhost:3001/klanten/${user.id}`, {
           method: 'DELETE',
+          headers: {
+            "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
+            'Content-Type': 'application/json',
+          },
           credentials: 'include'
         });
 
@@ -105,6 +144,7 @@ function MyAccount() {
       const response = await fetch('http://localhost:3001/klanten', {
         method: 'POST',
         headers: {
+          "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -135,7 +175,7 @@ function MyAccount() {
   }
 
   if (!user) {
-    return <div className='content'>Geen gebruikersinformatie beschikbaar.</div>; // Fallback for user being null
+    return <div className='content'>Geen gebruikersinformatie beschikbaar.</div>;
   }
 
   return (
@@ -180,30 +220,57 @@ function MyAccount() {
       ) : (
         <table>
           <thead>
+              <tr>
+                {/* <th>ID</th> */}
+                <th>Omschrijving</th>
+                <th>Service Type ID</th>
+                <th>Datum Aanvraag</th>
+                <th>Datum Afhandeling</th>
+                <th>Status</th>
+                <th>Bezichtiging</th>
+              </tr>
+            </thead>
+            <tbody>
+              {serviceRequests.map(request => (
+                <tr key={request.id}>
+
+                  <td>{request.omschrijving}</td>
+                  <td>{request.servicetype_id}</td>
+                  <td>{formatDate(request.datum_aanvraag)}</td>
+                  <td>{formatDate(request.datum_afhandeling)}</td>
+                  <td>{request.status}</td>
+                  <td>{request.bezichtiging}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+
+      <h2>Mijn Inschrijvingen</h2>
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p>Fout: {error}</p>
+      ) : (
+        <table>
+          <thead>
             <tr>
-              <th>ID</th>
-              <th>Klant ID</th>
-              <th>Omschrijving</th>
-              <th>Contract ID</th>
-              <th>Service Type ID</th>
-              <th>Datum Aanvraag</th>
-              <th>Datum Afhandeling</th>
-              <th>Status</th>
+              <th>Pand ID</th>
+              <th>Aantal Personen</th>
+              <th>Datum</th>
+              <th>Jaar Inkomen</th>
               <th>Bezichtiging</th>
             </tr>
           </thead>
           <tbody>
-            {serviceRequests.map(request => (
-              <tr key={request.id}>
-                <td>{request.id}</td>
-                <td>{request.klantenid}</td>
-                <td>{request.omschrijving}</td>
-                <td>{request.contract_id}</td>
-                <td>{request.servicetype_id}</td>
-                <td>{formatDate(request.datum_aanvraag)}</td>
-                <td>{formatDate(request.datum_afhandeling)}</td>
-                <td>{request.status}</td>
-                <td>{request.bezichtiging}</td>
+            {inschrijvingen.map(inschrijving => (
+              <tr key={inschrijving.id}>
+
+                <td>{inschrijving.pandid}</td>
+                <td>{inschrijving.hoeveel_personen}</td>
+                <td>{formatDate(inschrijving.datum)}</td>
+                <td>{inschrijving.jaar_inkomen}</td>
+                <td>{inschrijving.bezichtiging}</td>
               </tr>
             ))}
           </tbody>
