@@ -165,34 +165,54 @@ function MyAccount() {
 
   const handleResendEmail = async () => {
     try {
-      const response = await fetch('http://localhost:3001/klanten', {
-        method: 'POST',
-        headers: {
-          "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: user.email,
-          voornaam: user.voornaam,
-          achternaam: user.achternaam,
-          geslacht: user.geslacht,
-          geboortedatum: user.geboortedatum,
-          huidig_woonadres: user.huidig_woonadres,
-          telefoonnummer: user.telefoonnummer,
-          wachtwoord: 'placeholderPassword',
-        }),
+        const response = await fetch(`http://localhost:3001/klanten/resend-verification/${user.id}`, {
+            method: 'POST',
+            headers: {
+                "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', // replace with your actual API key
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            setMessage(data.message); // Success message from the server
+        } else {
+            const errorData = await response.json();
+            setMessage(`Fout bij het opnieuw verzenden van de e-mail: ${errorData.message}`);
+        }
+    } catch (error) {
+        setMessage(`Er is een fout opgetreden: ${error.message}`);
+    }
+};
+
+const [newAddress, setNewAddress] = useState('');
+
+const handleChangeAddress = async () => {
+  try {
+      const response = await fetch(`http://localhost:3001/klanten/${user.id}/huidig-woonadres`, {
+          method: 'PUT',
+          headers: {
+              "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', // replace with your actual API key
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              huidig_woonadres: newAddress,
+          }),
       });
 
       if (response.ok) {
-        setMessage('Verificatie e-mail is opnieuw verstuurd! Controleer je inbox & spam.');
+          const data = await response.json();
+          setMessage(data.message);
+          // Optionally reset the input field
+          setNewAddress('');
       } else {
-        const errorData = await response.json();
-        setMessage(`Fout bij het opnieuw verzenden van de e-mail: ${errorData.message}`);
+          const errorData = await response.json();
+          setMessage(`Fout bij het wijzigen van het adres: ${errorData.message}`);
       }
-    } catch (error) {
+  } catch (error) {
       setMessage(`Er is een fout opgetreden: ${error.message}`);
-    }
-  };
+  }
+};
 
   if (!isLoggedIn) {
     return <div className='content'>U bent niet ingelogd. Log in om uw account te bekijken.</div>;
@@ -205,6 +225,17 @@ function MyAccount() {
   return (
     <div className='content'>
       <h1>Mijn Account</h1>
+        <div>
+            <input 
+                type="text" 
+                value={newAddress} 
+                onChange={(e) => setNewAddress(e.target.value)} 
+                placeholder="Voer nieuw woonadres in" 
+            />
+            <button onClick={handleChangeAddress}>Adres Wijzigen</button>
+        </div>
+        
+        {message && <p>{message}</p>}
 
       <div className="user-info">
         <p><strong>Volledige naam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
