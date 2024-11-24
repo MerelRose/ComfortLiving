@@ -1,7 +1,7 @@
 import React, { useState, useContext, useEffect } from 'react';
 import { AuthContext } from './AuthContext';
 
-function LoginForm({ isOpen, togglePopup }) {
+function LoginForm({ isOpen, togglePopup, setIsRegisterOpen }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -28,7 +28,7 @@ function LoginForm({ isOpen, togglePopup }) {
         }),
       });
 
-      let isEmployee = false; // Variabele om bij te houden of de gebruiker een medewerker is
+      let isEmployee = false;
 
       if (!response.ok) {
         response = await fetch(customerEndpoint, {
@@ -42,7 +42,7 @@ function LoginForm({ isOpen, togglePopup }) {
           })
         });
       } else {
-        isEmployee = true; // Als de response ok is, is de gebruiker een medewerker
+        isEmployee = true;
       }
 
       const responseText = await response.text();
@@ -55,11 +55,11 @@ function LoginForm({ isOpen, togglePopup }) {
 
       if (response.ok) {
         if (userData) {
-          login({ ...userData, isEmployee }); // Voeg isEmployee toe aan de login
+          login({ ...userData, isEmployee });
         } else {
-          login({ isLoggedIn: true, isEmployee }); // Zorg ervoor dat isEmployee ook hier wordt toegevoegd
+          login({ isLoggedIn: true, isEmployee });
         }
-        sessionStorage.setItem('user', JSON.stringify({ isLoggedIn: true, isEmployee })); // Sla isEmployee op in sessionStorage
+        sessionStorage.setItem('user', JSON.stringify({ isLoggedIn: true, isEmployee }));
         setSuccessMessage('Login succesvol!');
         togglePopup();
       } else {
@@ -71,7 +71,6 @@ function LoginForm({ isOpen, togglePopup }) {
   };
 
   useEffect(() => {
-    // Clear messages when the popup opens
     if (isOpen) {
       setErrorMessage('');
       setSuccessMessage('');
@@ -108,7 +107,11 @@ function LoginForm({ isOpen, togglePopup }) {
           {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
           {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
           <a type="button" tabindex="0" href="/wsp/password_forgotten">Wachtwoord vergeten?</a>
+          <span> | </span>
+          <a type="button" onClick={() => { setIsRegisterOpen(true); togglePopup(); }} style={{color: 'blue'}}>Geen account? Registreren.</a>
+          <br />
           <button type="submit">Inloggen</button>
+          <button type="button" onClick={togglePopup}>Sluiten</button>
         </form>
       </div>
     </div>
