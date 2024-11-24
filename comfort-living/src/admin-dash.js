@@ -351,11 +351,12 @@ const handlePandEditSubmit = async (e) => {
     return (
         <div className="content">
             <h1>Admin Dashboard</h1>
+            <br></br>
 
-            <button className="create-button" onClick={() => setShowWorkerForm(true)}>Create Worker</button>
-            <button className="create-button" onClick={() => setShowPandenForm(true)}>Create Pand</button>
-            <button className="create-button" onClick={() => setShowContractenForm(true)}>Create Contract</button>
-            <button className="create-button" onClick={() => setShowExternePartijForm(true)}>Create Externe Partij</button>
+            <button onClick={() => setShowWorkerForm(true)}>Create Worker</button>
+            <button onClick={() => setShowPandenForm(true)}>Create Pand</button>
+            {/* <button onClick={() => setShowContractenForm(true)}>Create Contract</button> */}
+            <button onClick={() => setShowExternePartijForm(true)}>Create Externe Partij</button>
 
             {/* Externe Partij Form Modal */}
             {showExternePartijForm && (
@@ -583,9 +584,9 @@ const handlePandEditSubmit = async (e) => {
                                 </td>
                             </tr>
                         ))}
-                    </tbody>
+                         </tbody>
                 </table>
-            )}
+            )}  
   
         {/* Contracten Form Modal */}
         {showContractenForm && (
@@ -601,8 +602,9 @@ const handlePandEditSubmit = async (e) => {
             </div>
           </div>
         )}
+        <br></br>
   
-        {/* Contracten Table */}
+        {/* Contracten Table
         <h2>Contracten</h2>
         {contracten.length === 0 ? <p>No contracts found.</p> : (
           <table className="worker-table">
@@ -623,7 +625,7 @@ const handlePandEditSubmit = async (e) => {
               ))}
             </tbody>
           </table>
-        )}
+        )} */}
       </div>
     );
 };
