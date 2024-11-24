@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './warning.css';
 
 export default function WarningPopup() {
-  const [open, setOpen] = useState(true);  // Modal opens automatically on page load
+  const [open, setOpen] = useState(false);  // Modal opens automatically on page load
 
   const handleClose = () => setOpen(false);
 
