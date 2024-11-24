@@ -328,7 +328,7 @@ const handleChangeAddress = async () => {
                   <td>{pand ? `${pand.straat} ${pand.huisnummer}` : 'Niet beschikbaar'}</td>
                   <td>{inschrijving.hoeveel_personen}</td>
                   <td>{formatDate(inschrijving.datum)}</td>
-                  <td>{inschrijving.jaar_inkomen}</td>
+                  <td>€ {inschrijving.jaar_inkomen}</td>
                   <td>{inschrijving.bezichtiging}</td>
                 </tr>
               );
