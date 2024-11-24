@@ -332,7 +332,6 @@ const handleChangeIncome = async () => {
               <th>Datum Aanvraag</th>
               <th>Datum Afhandeling</th>
               <th>Status</th>
-              <th>Bezichtiging</th>
             </tr>
           </thead>
           <tbody>
@@ -343,7 +342,6 @@ const handleChangeIncome = async () => {
                 <td>{formatDate(request.datum_aanvraag)}</td>
                 <td>{formatDate(request.datum_afhandeling)}</td>
                 <td>{request.status}</td>
-                <td>{request.bezichtiging}</td>
               </tr>
             ))}
           </tbody>
