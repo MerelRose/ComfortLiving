@@ -54,7 +54,7 @@ function MyAccount() {
         });
 
         if (!response.ok) {
-          throw new Error('Fout bij het ophalen van serviceverzoeken');
+          throw new Error('Fout bij het ophalen van verzoeken');
         }
 
         const data = await response.json();
