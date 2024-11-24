@@ -33,6 +33,12 @@ function MyAccount() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [newIncome, setNewIncome] = useState('');
+  const [opmerking, localSetOpmerking] = React.useState('');
+  const [selectedServiceType, localSetSelectedServiceType] = React.useState('');
+
+
+
   useEffect(() => {
     const fetchServiceRequests = async () => {
       if (!user || !user.id) return;
@@ -214,6 +220,33 @@ const handleChangeAddress = async () => {
   }
 };
 
+const handleChangeIncome = async () => {
+  try {
+      const response = await fetch(`http://localhost:3001/klanten/${user.id}/bruto-jaarinkomen`, {
+          method: 'PUT',
+          headers: {
+              "api-key": 'AIzaSyD-1uJ2J3QeQK9nKQJ9v6ZJ1Jzv6J1Jzv6', // replace with your actual API key
+              'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+              bruto_jaarinkomen: parseFloat(newIncome), // Ensure it's a number
+          }),
+      });
+
+      if (response.ok) {
+          const data = await response.json();
+          setMessage(data.message);
+          // Optionally reset the input field
+          setNewIncome('');
+      } else {
+          const errorData = await response.json();
+          setMessage(`Fout bij het wijzigen van het inkomen: ${errorData.message}`);
+      }
+  } catch (error) {
+      setMessage(`Er is een fout opgetreden: ${error.message}`);
+  }
+};
+
   if (!isLoggedIn) {
     return <div className='content'>U bent niet ingelogd. Log in om uw account te bekijken.</div>;
   }
@@ -237,6 +270,18 @@ const handleChangeAddress = async () => {
         
         {message && <p>{message}</p>}
 
+        <div>
+            <input 
+                type="number" 
+                value={newIncome} 
+                onChange={(e) => setNewIncome(e.target.value)} 
+                placeholder="Voer nieuw bruto jaarinkomen in" 
+            />
+            <button onClick={handleChangeIncome}>Inkomen Wijzigen</button>
+        </div>
+
+        {message && <p>{message}</p>}
+
       <div className="user-info">
         <p><strong>Volledige naam:</strong> {user.voornaam} {user.tussenvoegsel} {user.achternaam}</p>
         <p><strong>Email:</strong> {user.email || 'Niet beschikbaar'}</p>
@@ -244,6 +289,7 @@ const handleChangeAddress = async () => {
         <p><strong>Adres:</strong> {user.huidig_woonadres || 'Niet beschikbaar'}</p>
         <p><strong>Geslacht:</strong> {user.geslacht || 'Niet beschikbaar'}</p>
         <p><strong>Geboortedatum:</strong> {formatDate(user.geboortedatum)}</p>
+        <p><strong>Bruto jaarinkomen:</strong> {user.bruto_jaarinkomen}</p>
         <br />
 
         <button className='nav-btn' onClick ={() => setIsPopupOpen(true)}>Wachtwoord Wijzigen</button>
@@ -331,7 +377,11 @@ const handleChangeAddress = async () => {
           </tbody>
         </table>
       )}
+
+      
     </div>
+
+    
   );
 }
 
