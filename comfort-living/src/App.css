@@ -100,8 +100,9 @@ h2 {
   padding: 5px 10px;
   background-color: rgb(60,81,76, 0.5);
   color: white;
-  font-weight: bold;
+  /* font-weight: bold; */
   margin: 3px;
+  height: 35px;
 }
 
 .worker-btn:hover {
