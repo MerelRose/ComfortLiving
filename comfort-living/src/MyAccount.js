@@ -116,7 +116,12 @@ function MyAccount() {
       fetchInschrijvingen();
     }
   }, [isLoggedIn, user]);
-
+  {isServicePopupOpen && (
+    <ServiceVerzoeken
+        user={user}
+        onClose={() => setIsServicePopupOpen(false)} // Doorgeven van de onClose functie
+    />
+)}
   const handleChangePassword = async (oldPassword, newPassword) => {
     try {
       const response = await fetch(`http://localhost:3001/klanten/${user.id}/wachtwoord`, {
