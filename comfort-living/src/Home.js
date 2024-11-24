@@ -61,7 +61,7 @@ const FilteredPandenList = () => {
           <div key={pand.id} className='spotlight'>
             <img
               className='spotlight-foto'
-              src={pand.foto}
+              src={pand.fotos}
               alt="Pand afbeelding"
               onError={handleImageError}
             />
@@ -97,7 +97,7 @@ const FilteredPandenList = () => {
           <div key={pand.id} className='spotlight'>
           <img
             className='spotlight-foto'
-            src={pand.foto}
+            src={pand.fotos}
             alt="Pand afbeelding"
             onError={handleImageError}
           />
@@ -133,7 +133,7 @@ const FilteredPandenList = () => {
           <div key={pand.id} className='spotlight'>
           <img
             className='spotlight-foto'
-            src={pand.foto}
+            src={pand.fotos}
             alt="Pand afbeelding"
             onError={handleImageError}
           />

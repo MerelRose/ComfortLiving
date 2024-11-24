@@ -54,4 +54,26 @@
   form button:hover {
     background-color: #45a049;
   }
+
+
+button {
+    border: none;
+    border-radius: 35px;
+    background: linear-gradient(to bottom, #f0f0f0, #d3d3d3);
+    width: fit-content;
+    padding: 0px 20px;
+    height: 25px;
+    color: rgb(81, 138, 103);
+    cursor: pointer;
+    font-size: larger;
+    font-weight: 300;
+    font-family: 'Rubik';
+    margin-top: -80px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    margin: 5px;
+}
   
+button:hover {
+    transform: scale(1.05) rotate(-1deg);
+    box-shadow: rgba(130, 182, 150, 0.2) 0 -25px 18px -14px inset, rgba(49, 63, 54, 0.15) 0 1px 2px, rgba(175, 243, 201, 0.15) 0 2px 4px, rgba(54, 77, 63, 0.15) 0 4px 8px, rgba(92, 255, 155, 0.15) 0 8px 16px, rgba(44, 187, 99, 0.15) 0 16px 32px;
+}
