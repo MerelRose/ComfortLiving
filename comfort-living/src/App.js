@@ -15,6 +15,7 @@ import Admin from './admin-dash';
 
 function Header({ setIsLoginOpen, setIsRegisterOpen }) {
   const { isLoggedIn, user, logout } = useContext(AuthContext);
+  
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -37,9 +38,8 @@ function Header({ setIsLoginOpen, setIsRegisterOpen }) {
               {user.isEmployee && ( 
                 <button className="nav-btn" onClick={() => navigate('/worker-dash')}>Worker Dashboard</button>
               )}       
-
-                            {user.admin && ( 
-                <button className="nav-btn" onClick={() => navigate('/admin-dash')}>admin Dashboard</button>
+              {user.admin && ( 
+                <button className="nav-btn" onClick={() => navigate('/admin-dash')}>Admin Dashboard</button>
               )}
             </>
           ) : (
@@ -75,8 +75,8 @@ function App() {
   }, [isLoggedIn, user]);
   
   useEffect(() => {
-    const storedUser  = sessionStorage.getItem('user');
-    if (storedUser  && !isLoggedIn && location.pathname === '/') {
+    const storedUser   = sessionStorage.getItem('user');
+    if (storedUser   && !isLoggedIn && location.pathname === '/') {
       navigate('/');
     }
   }, [isLoggedIn, location.pathname, navigate]);
@@ -86,7 +86,7 @@ function App() {
       <Header setIsLoginOpen={setIsLoginOpen} setIsRegisterOpen={setIsRegisterOpen} />
       <div className="App">
         <WarningPopup />
-        <LoginForm isOpen={isLoginOpen} togglePopup={() => setIsLoginOpen(false)} />
+        <LoginForm isOpen={isLoginOpen} togglePopup={() => setIsLoginOpen(false)} setIsRegisterOpen={setIsRegisterOpen} />
         <Register isOpen={isRegisterOpen} togglePopup={() => setIsRegisterOpen(false)} />
         <Routes className="content">
           <Route path="/search" element={<Search />} />
@@ -96,7 +96,6 @@ function App() {
           <Route path="/detailpage" element={<WoningDetail />} />
           <Route path="/worker-dash" element={user?.isEmployee ? <Worker /> : <Navigate to="/" />} />
           <Route path="/admin-dash" element={user?.admin === 1 ? <Admin /> : <Navigate to="/" />} />
-
         </Routes>
       </div>
     </>
