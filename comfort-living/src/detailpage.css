@@ -9,6 +9,12 @@
     width: 20%;
 }
 
+.detail-img {
+    width: auto;
+    height: 100%;
+    border-radius: 15px;
+}
+
 /* Adjust map position and font size for smaller screens */
 @media (max-width: 768px) {
     .map {
@@ -22,6 +28,7 @@
 
 .pandfoto {
     width: 80%;
+    padding: 1%;
     height: 500px;
     background-color: rgb(248, 248, 248);
     margin-top: 2%;

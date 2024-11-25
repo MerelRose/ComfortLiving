@@ -137,6 +137,7 @@ const WoningDetail = () => {
             <div>
                 <div className='pandfoto'>
                 <img
+                    className='detail-img'
                     src={woning.fotos}
                     alt="Pand afbeelding"
                     onError={handleImageError}
