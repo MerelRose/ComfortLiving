@@ -31,7 +31,7 @@ const FilteredPandenList = () => {
         setFilteredPandenA(filteredDataA);
 
         // Filter for id === 0
-        const filteredDataId0 = response.data.filter((pand) => pand.id === 2);
+        const filteredDataId0 = response.data.filter((pand) => pand.id === 59);
         setFilteredPandenId0(filteredDataId0);
       })
       .catch((error) => {
@@ -68,7 +68,7 @@ const FilteredPandenList = () => {
             <div className='spotlight-info'>
               <h2>{pand.straat} {pand.huisnummer}</h2>
               <p>{pand.plaats} {pand.postcode}</p>
-              <p>€ {pand.prijs}/maand</p>
+              <p>€ {pand.prijs} &#40;{pand.type}&#41;</p>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" role="presentation" viewBox="0 0 48 48" class="flex-0 mr-1"><path d="M38.5 32.25v-16.5a5 5 0 10-6.25-6.25h-16.5a5 5 0 10-6.25 6.25v16.5a5 5 0 106.25 6.25h16.5a5 5 0 106.25-6.25zm-6.25 3.25h-16.5a5 5 0 00-3.25-3.25v-16.5a5 5 0 003.25-3.25h16.5a5 5 0 003.25 3.25v16.5a5 5 0 00-3.25 3.25zM37 9a2 2 0 11-2 2 2 2 0 012-2zM11 9a2 2 0 11-2 2 2 2 0 012-2zm0 30a2 2 0 112-2 2 2 0 01-2 2zm26 0a2 2 0 112-2 2 2 0 01-2 2z"></path></svg>
@@ -104,7 +104,7 @@ const FilteredPandenList = () => {
           <div className='spotlight-info'>
             <h2>{pand.straat} {pand.huisnummer}</h2>
             <p>{pand.plaats} {pand.postcode}</p>
-            <p>€ {pand.prijs}</p>
+            <p>€ {pand.prijs} &#40;{pand.type}&#41;</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" role="presentation" viewBox="0 0 48 48" class="flex-0 mr-1"><path d="M38.5 32.25v-16.5a5 5 0 10-6.25-6.25h-16.5a5 5 0 10-6.25 6.25v16.5a5 5 0 106.25 6.25h16.5a5 5 0 106.25-6.25zm-6.25 3.25h-16.5a5 5 0 00-3.25-3.25v-16.5a5 5 0 003.25-3.25h16.5a5 5 0 003.25 3.25v16.5a5 5 0 00-3.25 3.25zM37 9a2 2 0 11-2 2 2 2 0 012-2zM11 9a2 2 0 11-2 2 2 2 0 012-2zm0 30a2 2 0 112-2 2 2 0 01-2 2zm26 0a2 2 0 112-2 2 2 0 01-2 2z"></path></svg>
@@ -140,7 +140,7 @@ const FilteredPandenList = () => {
           <div className='spotlight-info'>
             <h2>{pand.straat} {pand.huisnummer}</h2>
             <p>{pand.plaats} {pand.postcode}</p>
-            <p>€ {pand.prijs}</p>
+            <p>€ {pand.prijs} &#40;{pand.type}&#41;</p>
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
               <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" role="presentation" viewBox="0 0 48 48" class="flex-0 mr-1"><path d="M38.5 32.25v-16.5a5 5 0 10-6.25-6.25h-16.5a5 5 0 10-6.25 6.25v16.5a5 5 0 106.25 6.25h16.5a5 5 0 106.25-6.25zm-6.25 3.25h-16.5a5 5 0 00-3.25-3.25v-16.5a5 5 0 003.25-3.25h16.5a5 5 0 003.25 3.25v16.5a5 5 0 00-3.25 3.25zM37 9a2 2 0 11-2 2 2 2 0 012-2zM11 9a2 2 0 11-2 2 2 2 0 012-2zm0 30a2 2 0 112-2 2 2 0 01-2 2zm26 0a2 2 0 112-2 2 2 0 01-2 2z"></path></svg>

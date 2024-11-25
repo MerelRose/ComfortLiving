@@ -4,6 +4,7 @@
   padding: 0;
   margin: 0;
   overflow-y: hidden;
+  background-color: rgb(60,81,76, 0.2);
 }
 
 h1 {
